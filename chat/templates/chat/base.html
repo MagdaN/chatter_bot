@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+</head>
+
+<body>
+
+<header>
+{% include 'chat/base_header.html' %}
+</header>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<footer>
+{% include 'chat/base_footer.html' %}
+</footer>
+
+{% if not debug %}
+    {% include 'chat/base_analytics.html' %}
+{% endif %}
+
+</body>
+</html>

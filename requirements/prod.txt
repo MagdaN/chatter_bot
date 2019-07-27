@@ -1,0 +1,4 @@
+-r base.txt
+
+# production only dependencies in aphabetical order
+gunicorn
