@@ -4,6 +4,31 @@ chatbot
 Setup
 -----
 
+Install the front-end dependencies using:
+
+```
+npm install
+```
+
+Build the static files using:
+
+```
+npm run build
+```
+
+Create a virtual environment using:
+
+```
+python3 -m venv env
+source env/bin/activate
+```
+
+Install the back-end dependecies using:
+
+```
+pip install -r requirements/dev.txt
+```
+
 Create `.env` with:
 
 ```
@@ -26,4 +51,10 @@ Start the development server using:
 
 ```
 ./manage.py runserver
+```
+
+Start the webpack watch mode using:
+
+```
+npm run watch
 ```
