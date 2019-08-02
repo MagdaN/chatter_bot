@@ -61,18 +61,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DJANGO_PSQL_DBNAME'),
-        'USER': os.getenv('DJANGO_PSQL_USER'),
-        'PASSWORD': os.getenv('DJANGO_PSQL_PASSWORD'),
-        'HOST': os.getenv('DJANGO_PSQL_HOST'),
-        'PORT': os.getenv('DJANGO_PSQL_PORT'),
+if os.getenv('DJANGO_USE_SQLITE'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.getenv('DJANGO_PSQL_DBNAME'),
+            'USER': os.getenv('DJANGO_PSQL_USER'),
+            'PASSWORD': os.getenv('DJANGO_PSQL_PASSWORD'),
+            'HOST': os.getenv('DJANGO_PSQL_HOST'),
+            'PORT': os.getenv('DJANGO_PSQL_PORT'),
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
