@@ -1,5 +1,4 @@
 -r common.txt
 
 # production only dependencies in aphabetical order
-gunicorn
 psycopg2-binary>=2.8
