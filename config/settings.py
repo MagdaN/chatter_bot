@@ -9,7 +9,7 @@ if os.getenv('DJANGO_DEBUG'):
 else:
     DEBUG = False
 
-if os.getenv('DJANGO_ALLOWED_HOSTS')
+if os.getenv('DJANGO_ALLOWED_HOSTS'):
     ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split()
 else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1']
