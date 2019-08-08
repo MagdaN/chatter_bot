@@ -7,18 +7,8 @@ Installing the prerequisites differs on the different operating systems and is t
 We recommend to install the prerequisites using the packaging system of your distribution. On Debian/Ubuntu use:
 
 ```bash
-sudo apt install build-essential python3-dev python3-pip python3-venv 
+sudo apt install build-essential python3-dev python3-pip python3-venv
 ```
-
-on RHEL/CentOS use:
-
-```bash
-
-```
-
-On Ubuntu 14.04, `python3-venv` is not available. Please use `python3.5-venv` instead.
-
-On RHEL/CentOS `selinux` is enabled by default. This can result in unexpected errors, depending on where you store the source code on the system. While the prefereble way is to configure it correctly (which is beyond the scope of this documentation), you can also set `selinux` to `permissive` or `disabled` in `/etc/selinux/config` (and reboot afterwards).
 
 ## macOS
 
