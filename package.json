@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MagdaN/chatter_bot"
+    "url": "https://github.com/de-hub/chatbot"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",

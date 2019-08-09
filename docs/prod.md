@@ -8,7 +8,7 @@ apt-get install build-essential python3-dev python3-pip python3-venv
 apt-get install postgresql
 ```
 
-In production, you should create a dedicated user teh application. All steps for the installation, which do not need root access, should be done using this user. We assume this user is called `chatbot`, it’s home is `/srv/chatbot` and the application is located in `/srv/chatbot/chatter_bot`. The user can be created using:
+In production, you should create a dedicated user teh application. All steps for the installation, which do not need root access, should be done using this user. We assume this user is called `chatbot`, it’s home is `/srv/chatbot` and the application is located in `/srv/chatbot/chatbot`. The user can be created using:
 
 ```bash
 # as root
@@ -29,8 +29,8 @@ Clone the repository and change directory and install the production dependencie
 
 ```bash
 # as chatbot
-git clone https://github.com/MagdaN/chatter_bot chatter_bot
-cd chatter_bot
+git clone https://github.com/de-hub/chatbot
+cd chatbot
 ```
 
 Install production dependencies:
@@ -40,7 +40,7 @@ Install production dependencies:
 pip install -r requirements/prod.txt
 ```
 
-Create `/srv/chatbot/chatter_bot/.env` with the folowing content:
+Create `/srv/chatbot/chatbot/.env` with the folowing content:
 
 ```bash
 DJANGO_SECRET_KEY=<a long random secret key>
@@ -111,8 +111,8 @@ After=network.target
 [Service]
 User=chatbot
 Group=chatbot
-WorkingDirectory=/srv/chatbot/chatter_bot
-EnvironmentFile=/srv/chatbot/chatter_bot/.env
+WorkingDirectory=/srv/chatbot/chatbot
+EnvironmentFile=/srv/chatbot/chatbot/.env
 ExecStart=/srv/chatbot/env/bin/gunicorn --bind unix:/tmp/chatbot.sock config.wsgi:application
 
 [Install]
@@ -156,7 +156,7 @@ server {
         proxy_pass http://unix:/tmp/chatbot.sock;
     }
     location /static/ {
-        alias /srv/chatbot/chatter_bot/static_root/;
+        alias /srv/chatbot/chatbot/static_root/;
     }
 }
 ```
