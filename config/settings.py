@@ -124,14 +124,20 @@ CHATTERBOT = {
     'name': 'Chat Bot',
     'logic_adapters': [
         'chatterbot.logic.BestMatch'
-    ],
-    'trainer': 'chatterbot.trainers.ChatterBotCorpusTrainer',
-    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter',
+    ],    
+    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'    
+}
+
+CHATTERBOT_TRAINING = {
+    'trainer': 'chatterbot.trainers.ListTrainer',
     'training_data': [
-        "chatterbot.corpus.english",
-        "chatterbot.corpus.spanish",
-        "chatterbot.corpus.italian",
-        "chatterbot.corpus.french",
-        "chatterbot.corpus.russian"
-    ]
+        'How are you?',
+        'I am good.',
+        'That is good to hear.',
+        'How are you?',
+        'I am not good.',
+        'That is not good to hear.',
+        'Thank you',
+        'You are welcome.',
+    ]    
 }

@@ -1,3 +1,10 @@
+import importlib
+
+from chatterbot import ChatBot
+from chatterbot.ext.django_chatterbot import settings as chatterbot_settings
+from chatterbot.trainers import ChatterBotCorpusTrainer
+
+from django.conf import settings as django_settings
 from django.core.management.base import BaseCommand
 
 
@@ -10,16 +17,18 @@ class Command(BaseCommand):
     help = 'Trains the database used by the chat bot'
     can_import_settings = True
 
-    def handle(self, *args, **options):
-        from chatterbot import ChatBot
-        from chatterbot.ext.django_chatterbot import settings
-        from chatterbot.trainers import ChatterBotCorpusTrainer
+    def handle(self, *args, **options):        
 
-        chatterbot = ChatBot(**settings.CHATTERBOT)
+        chatterbot = ChatBot(**chatterbot_settings.CHATTERBOT)
 
-        trainer = ChatterBotCorpusTrainer(chatterbot)
+        trainer_settings = getattr(django_settings, 'CHATTERBOT_TRAINING', {})
 
-        trainer.train(*settings.CHATTERBOT['training_data'])
+        if trainer_settings:
+            trainer_string = trainer_settings['trainer']
+            module_name, class_name = trainer_string.rsplit('.', 1)
+            trainer_class = getattr(importlib.import_module(module_name), class_name)
+            trainer = trainer_class(chatterbot)
+            trainer.train(trainer_settings['training_data'])
 
         # Django 1.8 does not define SUCCESS
         if hasattr(self.style, 'SUCCESS'):
