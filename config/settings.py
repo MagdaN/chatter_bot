@@ -124,22 +124,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 CHATTERBOT = {
     'name': 'Chat Bot',
     'read_only': True,
+    'preprocessors': [
+        'chatterbot.preprocessors.clean_whitespace',
+        'chatterbot.preprocessors.convert_to_ascii'
+    ],
     'logic_adapters': [
         'chatterbot.logic.BestMatch'
     ],
     'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'
-}
-
-CHATTERBOT_TRAINING = {
-    'trainer': 'chatterbot.trainers.ListTrainer',
-    'training_data': [
-        'How are you?',
-        'I am good.',
-        'That is good to hear.',
-        'How are you?',
-        'I am not good.',
-        'That is not good to hear.',
-        'Thank you',
-        'You are welcome.',
-    ]    
 }
