@@ -123,10 +123,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 
 CHATTERBOT = {
     'name': 'Chat Bot',
+    'read_only': True,
     'logic_adapters': [
         'chatterbot.logic.BestMatch'
-    ],    
-    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'    
+    ],
+    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'
 }
 
 CHATTERBOT_TRAINING = {
