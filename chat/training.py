@@ -22,5 +22,5 @@ def train_corpus(corpus_name):
     trainer = ChatterBotCorpusTrainer(chatbot)
 
     logger.info('Train using corpus "%s"', corpus_name)
-    trainer.train(options['corpus'])
+    trainer.train(corpus_name)
     logger.info('Training complete')
