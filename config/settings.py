@@ -1,4 +1,5 @@
 import os
+from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -122,16 +123,79 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 
 CHATTERBOT = {
     'name': 'Chat Bot',
+    'read_only': True,
+    'preprocessors': [
+        'chatterbot.preprocessors.clean_whitespace',
+        'chatterbot.preprocessors.convert_to_ascii'
+    ],
     'logic_adapters': [
         'chatterbot.logic.BestMatch'
     ],
-    'trainer': 'chatterbot.trainers.ChatterBotCorpusTrainer',
-    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter',
-    'training_data': [
-        "chatterbot.corpus.english",
-        "chatterbot.corpus.spanish",
-        "chatterbot.corpus.italian",
-        "chatterbot.corpus.french",
-        "chatterbot.corpus.russian"
-    ]
+    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'
+}
+
+LOGGING_DIR = os.getenv('DJANGO_LOGGING_DIR', 'log')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
+    'formatters': {
+        'default': {
+            'format': '[%(asctime)s] %(levelname)s: %(message)s'
+        },
+        'name': {
+            'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
+        },
+        'console': {
+            'format': '[%(asctime)s] %(message)s'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'error_log': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGGING_DIR, 'error.log'),
+            'formatter': 'default'
+        },
+        'chat_log': {
+            'level': 'DEBUG',
+            'class':'logging.FileHandler',
+            'filename': os.path.join(LOGGING_DIR, 'chat.log'),
+            'formatter': 'name'
+        },
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'error_log'],
+            'level': 'ERROR',
+            'propagate': True
+        },
+        'chat': {
+            'handlers': ['chat_log'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False
+        }
+    }
 }

@@ -2,6 +2,7 @@
 chatterbot
 chatterbot-corpus
 Django>=2.2
+django-extensions>=2.1
 django-filter>=2.1
 djangorestframework>=3.9
 python-dotenv
