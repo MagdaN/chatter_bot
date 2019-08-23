@@ -8,7 +8,7 @@ def train(modeladmin, request, queryset):
     for instance in queryset:
         instance.train()
 
-train.short_description = _('Train again')
+train.short_description = _('Train selected TrainingFiles again')
 
 
 @admin.register(TrainingFile)
