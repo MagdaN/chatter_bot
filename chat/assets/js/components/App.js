@@ -1,4 +1,5 @@
 import React, { Component} from "react"
+import Cookies from 'js-cookie';
 
 class App extends Component {
 
@@ -8,10 +9,19 @@ class App extends Component {
       text: '',
       conversation: []
     }
+    this.handleTextChange = this.handleTextChange.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleTextChange (e) {
     this.setState({text: e.target.value})
+  }
+
+  handleKeyDown(e) {
+    if(e.keyCode == 13 && e.shiftKey == false) {
+      this.handleSubmit(e)
+    }
   }
 
   handleSubmit (e) {
@@ -26,7 +36,8 @@ class App extends Component {
 
     const headers = {
       'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'X-CSRFToken': Cookies.get('csrftoken')
     }
 
     const params = {
@@ -68,12 +79,15 @@ class App extends Component {
               return <div className={item.type} key={i}>{item.text}</div>
             })
           }
-        <form className="chat__item--user" onSubmit={this.handleSubmit.bind(this)}>
+        <form className="chat__item--user" onSubmit={this.handleSubmit}>
           <div className="form-group">
             <textarea
               className="form-control"
               placeholder={gettext('Ask something')}
-              onChange={this.handleTextChange.bind(this)} required="required" value={text}
+              value={text}
+              required="required"
+              onChange={this.handleTextChange}
+              onKeyDown={this.handleKeyDown}
             />
           </div>
           <input type="submit" className="btn btn-primary" value={gettext('Submit')}/>
