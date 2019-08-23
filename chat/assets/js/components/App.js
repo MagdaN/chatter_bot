@@ -4,7 +4,10 @@ class App extends Component {
 
   constructor (props) {
     super(props)
-    this.state = {text: '', conversation: []}
+    this.state = {
+      text: '',
+      conversation: []
+    }
   }
 
   handleTextChange (e) {
@@ -13,6 +16,7 @@ class App extends Component {
 
   handleSubmit (e) {
     e.preventDefault()
+
     let text = this.state.text.trim()
     if (!text) {
       return
@@ -25,57 +29,56 @@ class App extends Component {
       'Content-Type': 'application/json'
     }
 
-    const options = {
+    const params = {
       method: 'POST',
       body: JSON.stringify({text: text}),
       headers
     }
 
-    fetch(apiUrl, options)
-      .then(res => res.json())
+    fetch(apiUrl, params)
+      .then(response => response.json())
       .then(result => {
-      	let conversation = this.state.conversation
-      	conversation.push({
-      		type: 'chat__item--user',
-      		text: this.state.text
-      	})
-      	conversation.push({
-      		type: 'chat__item--chatbot',
-      		text: result.text
-      	})
+        let conversation = this.state.conversation
+        conversation.push({
+          type: 'chat__item--user',
+          text: this.state.text
+        })
+        conversation.push({
+          type: 'chat__item--chatbot',
+          text: result.text
+        })
         this.setState({
           conversation: conversation,
           text: ''
         })
-      },
-      (error) => {
+      }, error => {
         this.setState({ error })
       }
     )
   }
 
   render() {
-  	const { conversation, text } = this.state 
+    const { conversation, text } = this.state
 
-   return(
-   	  <div className='row chat'>
-   	  	<div className='col-md-6 offset-md-3'>
-   	      {
-   	      	conversation.map((item, i) => {
-   	      		return <div className={item.type} key={i}>{item.text}</div>
-   	      	})
-   	      }
-	      <form className="chat__item--user" onSubmit={this.handleSubmit.bind(this)}>           
-	        <div className="form-group">
-	          <textarea 
-	            className="form-control"
-	            placeholder="Frag was"
-	            onChange={this.handleTextChange.bind(this)} required="required" value={text}
-	          />
-	        </div>
-	        <input type="submit" className="btn btn-primary" />
-	      </form>
-	      </div>
+    return(
+      <div className='row chat'>
+        <div className='col-md-6 offset-md-3'>
+          {
+            conversation.map((item, i) => {
+              return <div className={item.type} key={i}>{item.text}</div>
+            })
+          }
+        <form className="chat__item--user" onSubmit={this.handleSubmit.bind(this)}>
+          <div className="form-group">
+            <textarea
+              className="form-control"
+              placeholder={gettext('Ask something')}
+              onChange={this.handleTextChange.bind(this)} required="required" value={text}
+            />
+          </div>
+          <input type="submit" className="btn btn-primary" value={gettext('Submit')}/>
+        </form>
+        </div>
       </div>
     )
  }
