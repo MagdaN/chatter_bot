@@ -169,7 +169,7 @@ if LOG_DIR:
         'loggers': {
             'django': {
                 'handlers': ['console'],
-                'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+                'level': LOG_LEVEL,
             },
             'django.request': {
                 'handlers': ['mail_admins', 'error_log'],
@@ -178,7 +178,7 @@ if LOG_DIR:
             },
             'chat': {
                 'handlers': ['chat_log'],
-                'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+                'level': LOG_LEVEL,
                 'propagate': False
             }
         }
