@@ -1,19 +1,16 @@
 import os
+
 from django.utils.translation import gettext_lazy as _
+
+import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-if os.getenv('DJANGO_DEBUG'):
-    DEBUG = (os.getenv('DJANGO_DEBUG').upper() == 'TRUE')
-else:
-    DEBUG = False
+DEBUG = (os.getenv('DEBUG', 'False').upper() == 'TRUE')
 
-if os.getenv('DJANGO_ALLOWED_HOSTS'):
-    ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split()
-else:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1 ::1').split()
 
 INSTALLED_APPS = [
     # django apps
@@ -68,24 +65,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-if os.getenv('DJANGO_USE_SQLITE'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.getenv('DJANGO_PSQL_DBNAME'),
-            'USER': os.getenv('DJANGO_PSQL_USER'),
-            'PASSWORD': os.getenv('DJANGO_PSQL_PASSWORD'),
-            'HOST': os.getenv('DJANGO_PSQL_HOST'),
-            'PORT': os.getenv('DJANGO_PSQL_PORT'),
-        }
-    }
+DATABASES = {
+    'default': dj_database_url.parse(os.getenv('DATABASE')),
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -134,68 +116,70 @@ CHATTERBOT = {
     'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'
 }
 
-LOGGING_DIR = os.getenv('DJANGO_LOGGING_DIR', 'log')
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+LOG_DIR = os.getenv('LOG_DIR')
+if LOG_DIR:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'filters': {
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse'
+            },
+            'require_debug_true': {
+                '()': 'django.utils.log.RequireDebugTrue'
+            }
         },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue'
-        }
-    },
-    'formatters': {
-        'default': {
-            'format': '[%(asctime)s] %(levelname)s: %(message)s'
+        'formatters': {
+            'default': {
+                'format': '[%(asctime)s] %(levelname)s: %(message)s'
+            },
+            'name': {
+                'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
+            },
+            'console': {
+                'format': '[%(asctime)s] %(message)s'
+            }
         },
-        'name': {
-            'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
+        'handlers': {
+            'mail_admins': {
+                'level': 'ERROR',
+                'filters': ['require_debug_false'],
+                'class': 'django.utils.log.AdminEmailHandler'
+            },
+            'error_log': {
+                'level': 'ERROR',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(LOG_DIR, 'error.log'),
+                'formatter': 'default'
+            },
+            'chat_log': {
+                'level': 'DEBUG',
+                'class':'logging.FileHandler',
+                'filename': os.path.join(LOG_DIR, 'chat.log'),
+                'formatter': 'name'
+            },
+            'console': {
+                'level': 'INFO',
+                'filters': ['require_debug_true'],
+                'class': 'logging.StreamHandler',
+                'formatter': 'console'
+            }
         },
-        'console': {
-            'format': '[%(asctime)s] %(message)s'
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'error_log': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGGING_DIR, 'error.log'),
-            'formatter': 'default'
-        },
-        'chat_log': {
-            'level': 'DEBUG',
-            'class':'logging.FileHandler',
-            'filename': os.path.join(LOGGING_DIR, 'chat.log'),
-            'formatter': 'name'
-        },
-        'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'console'
-        }
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-        },
-        'django.request': {
-            'handlers': ['mail_admins', 'error_log'],
-            'level': 'ERROR',
-            'propagate': True
-        },
-        'chat': {
-            'handlers': ['chat_log'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': False
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            },
+            'django.request': {
+                'handlers': ['mail_admins', 'error_log'],
+                'level': 'ERROR',
+                'propagate': True
+            },
+            'chat': {
+                'handlers': ['chat_log'],
+                'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+                'propagate': False
+            }
         }
     }
-}

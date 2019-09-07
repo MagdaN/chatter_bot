@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 
 def main():
     load_dotenv()
-    os.makedirs(os.getenv('LOGGING_DIR', 'log'), exist_ok=True)
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
     try:
         from django.core.management import execute_from_command_line
