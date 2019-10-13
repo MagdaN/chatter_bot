@@ -21,19 +21,17 @@ pip install -r requirements/dev.txt
 Create `.env` file with:
 
 ```
-DJANGO_SECRET_KEY=<key>
-DJANGO_DEBUG=True
-DJANGO_SQLITE=True
+SECRET_KEY=<key>
+DEBUG=True
+DATABASE=sqlite:///<database>.sqlite3
 ```
 
 to use [SQLite](https://www.sqlite.org) as database, or
 
 ```
-DJANGO_SECRET_KEY=<key>
-DJANGO_DEBUG=True
-DJANGO_PSQL_DBNAME=<dbname>
-DJANGO_PSQL_USER=<user>
-DJANGO_PSQL_PASSWORD=<password>
+SECRET_KEY=<key>
+DEBUG=True
+DATABASE=postgresql://<user>:<password>@<host>:<port>/<database>
 ```
 
 to use [PostgreSQL](https://www.postgresql.org/). See `.env.sample` for all options.
