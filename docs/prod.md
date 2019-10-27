@@ -43,9 +43,8 @@ pip install -r requirements/prod.txt
 Create `/srv/chatbot/chatbot/.env` with the folowing content:
 
 ```bash
-DJANGO_SECRET_KEY=<a long random secret key>
-DJANGO_DEBUG=False
-DJANGO_PSQL_DBNAME=chatbot
+SECRET_KEY=<a long random secret key>
+DATABASE=postgresql://@/chatbot  # user, password, and host are empty when using peer auth
 ```
 
 Create the database user and the database:

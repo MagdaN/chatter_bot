@@ -6,7 +6,10 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+try:
+    SECRET_KEY = os.environ['SECRET_KEY']
+except KeyError:
+    raise RuntimeError('No SECRET_KEY in .env')
 
 DEBUG = (os.getenv('DEBUG', 'False').upper() == 'TRUE')
 
@@ -65,15 +68,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'TEST': {
-            'NAME': os.path.join(BASE_DIR, 'test_db.sqlite3'),
-        }
+try:
+    DATABASES = {
+        'default': dj_database_url.parse(os.environ['DATABASE']),
     }
-}
+except KeyError:
+    raise RuntimeError('No DATABASE in .env')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -164,19 +164,9 @@ if LOG_DIR:
                 'class':'logging.FileHandler',
                 'filename': os.path.join(LOG_DIR, 'chat.log'),
                 'formatter': 'name'
-            },
-            'console': {
-                'level': 'INFO',
-                'filters': ['require_debug_true'],
-                'class': 'logging.StreamHandler',
-                'formatter': 'console'
             }
         },
         'loggers': {
-            'django': {
-                'handlers': ['console'],
-                'level': LOG_LEVEL,
-            },
             'django.request': {
                 'handlers': ['mail_admins', 'error_log'],
                 'level': 'ERROR',
