@@ -7,6 +7,7 @@ class App extends Component {
     super(props)
     this.state = {
       text: '',
+      inResponseTo: 'Are you a Non_EU student?',
       conversation: []
     }
     this.handleTextChange = this.handleTextChange.bind(this)
@@ -42,7 +43,12 @@ class App extends Component {
 
     const params = {
       method: 'POST',
-      body: JSON.stringify({text: text}),
+      body: JSON.stringify(
+        {
+          text: text,
+          in_response_to: this.state.inResponseTo
+        }
+      ),
       headers
     }
 
@@ -60,7 +66,8 @@ class App extends Component {
         })
         this.setState({
           conversation: conversation,
-          text: ''
+          text: '',
+          inResponseTo: result.text
         })
       }, error => {
         this.setState({ error })
@@ -83,7 +90,7 @@ class App extends Component {
           <div className="form-group">
             <textarea
               className="form-control"
-              placeholder={gettext('Ask something')}
+              placeholder={gettext('Are you a Non_EU student?')}
               value={text}
               required="required"
               onChange={this.handleTextChange}
