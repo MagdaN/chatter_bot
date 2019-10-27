@@ -66,7 +66,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
-    'default': dj_database_url.parse(os.getenv('DATABASE')),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'TEST': {
+            'NAME': os.path.join(BASE_DIR, 'test_db.sqlite3'),
+        }
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -111,7 +117,7 @@ CHATTERBOT = {
         'chatterbot.preprocessors.convert_to_ascii'
     ],
     'logic_adapters': [
-        'chatterbot.logic.BestMatch'
+        'chat.adapters.CustomAdapter'
     ],
     'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'
 }
