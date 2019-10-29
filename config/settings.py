@@ -110,14 +110,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 
 CHATTERBOT = {
-    'name': 'Chat Bot',
+    'name': 'ChatBot',
     'read_only': True,
     'preprocessors': [
         'chatterbot.preprocessors.clean_whitespace',
         'chatterbot.preprocessors.convert_to_ascii'
     ],
     'logic_adapters': [
-        'chat.adapters.CustomAdapter'
+        'chat.logic.ChatAdapter'
     ],
     'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'
 }
@@ -159,9 +159,15 @@ if LOG_DIR:
                 'filename': os.path.join(LOG_DIR, 'error.log'),
                 'formatter': 'default'
             },
+            'chatterbot_log': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(LOG_DIR, 'chatterbot.log'),
+                'formatter': 'name'
+            },
             'chat_log': {
                 'level': 'DEBUG',
-                'class':'logging.FileHandler',
+                'class': 'logging.FileHandler',
                 'filename': os.path.join(LOG_DIR, 'chat.log'),
                 'formatter': 'name'
             }
@@ -171,6 +177,11 @@ if LOG_DIR:
                 'handlers': ['mail_admins', 'error_log'],
                 'level': 'ERROR',
                 'propagate': True
+            },
+            'chatterbot': {
+                'handlers': ['chatterbot_log'],
+                'level': LOG_LEVEL,
+                'propagate': False
             },
             'chat': {
                 'handlers': ['chat_log'],
