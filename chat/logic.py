@@ -5,7 +5,7 @@ class ChatAdapter(BestMatch):
 
     def process(self, input_statement, additional_response_selection_parameters):
 
-        in_response_to = additional_response_selection_parameters.pop('in_response_to')
+        in_response_to = additional_response_selection_parameters.pop('in_response_to', None)
 
         if in_response_to:
             additional_response_selection_parameters['exclude_text'] = in_response_to

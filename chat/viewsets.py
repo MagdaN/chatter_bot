@@ -15,7 +15,9 @@ class ChatbotViewSet(GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         return Response({
-            'name': self.chatterbot.name
+            "id": None,
+            "text": "How can I help you?",
+            "persona": "bot:ChatBot"
         })
 
     def create(self, request, *args, **kwargs):
