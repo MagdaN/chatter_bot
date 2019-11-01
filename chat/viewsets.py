@@ -26,11 +26,9 @@ class ChatbotViewSet(GenericViewSet):
 
         text = serializer.data['text']
         parameters = {
-            'persona__startswith': 'bot:'
+            'persona__startswith': 'bot:',
+            'previous': serializer.data.get('previous')
         }
-
-        if 'in_response_to' in serializer.data:
-            parameters['in_response_to'] = serializer.data['in_response_to']
 
         response = self.chatterbot.get_response(text, additional_response_selection_parameters=parameters)
         return Response(response.serialize(), status=200)

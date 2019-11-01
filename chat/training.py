@@ -36,9 +36,9 @@ class ChatTrainer(Trainer):
                 )
 
             if conversation_count % 2:
-                persona = 'client:ChatTrainer'
-            else:
                 persona = 'bot:ChatTrainer'
+            else:
+                persona = 'user:ChatTrainer'
 
             statement_search_text = self.chatbot.storage.tagger.get_bigram_pair_string(text)
 
@@ -52,6 +52,9 @@ class ChatTrainer(Trainer):
                     persona=persona
                 )
             )
+
+            if conversation_count == 0:
+                statement.add_tags('start')
 
             previous_statement_text = statement.text
             previous_statement_search_text = statement_search_text

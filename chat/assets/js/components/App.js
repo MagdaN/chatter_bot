@@ -11,7 +11,7 @@ class App extends Component {
     this.state = {
       conversation: [],
       text: '',
-      inResponseTo: ''
+      previous: null
     }
     this.textarea = React.createRef();
     this.handleTextChange = this.handleTextChange.bind(this)
@@ -28,7 +28,7 @@ class App extends Component {
   }
 
   fetchResponse() {
-    const { conversation, text, inResponseTo } = this.state
+    const { conversation, text, previous } = this.state
 
     const headers = {
       'Accept': 'application/json',
@@ -46,7 +46,7 @@ class App extends Component {
         body: JSON.stringify(
           {
             text: text,
-            in_response_to: inResponseTo
+            previous: previous
           }
         ),
         headers
@@ -72,7 +72,7 @@ class App extends Component {
         this.setState({
           conversation: conversation,
           text: '',
-          inResponseTo: result.text
+          previous: result.id
         })
       }, error => {
         this.setState({ error })

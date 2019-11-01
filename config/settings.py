@@ -119,7 +119,8 @@ CHATTERBOT = {
     'logic_adapters': [
         'chat.logic.ChatAdapter'
     ],
-    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter'
+    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter',
+    'maximum_similarity_threshold': 0.5
 }
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
