@@ -5,18 +5,14 @@ from chatterbot.conversation import Statement
 class ChatAdapter(BestMatch):
 
     def process(self, input_statement, additional_response_selection_parameters):
-        # get the previous statement
-        previous_id = additional_response_selection_parameters.pop('previous', None)
-        try:
-            previous = next(self.chatbot.storage.filter(pk=previous_id))
-            search_parameters = {
+        # get the previous text
+        session_texts = additional_response_selection_parameters.pop('session_texts', [])
 
-            }
-        except StopIteration:
-            previous = None
-            search_parameters = {
-                'tags': ['start']
-            }
+        # add start tag if there is no previous text
+        search_parameters = {}
+        if not session_texts:
+            self.chatbot.logger.info('No session texts, adding "start" tag to search_parameters')
+            search_parameters['tags'] = ['start']
 
         # Search for the closest match to the input statement
         search_results = self.search_algorithm.search(input_statement, **search_parameters)
@@ -41,7 +37,8 @@ class ChatAdapter(BestMatch):
             ))
 
         response_selection_parameters = {
-            'search_in_response_to': closest_match.search_text
+            'search_in_response_to': closest_match.search_text,
+            'exclude_text': session_texts
         }
 
         if additional_response_selection_parameters:
@@ -75,12 +72,12 @@ class ChatAdapter(BestMatch):
 
     def get_unsure_response(self):
         return Statement(
-            id=None,
-            text='Sorry, I\'m not sure what that means.'
+            text='Sorry, I\'m not sure what that means.',
+            confidence=0
         )
 
     def get_no_response(self):
         return Statement(
-            id=None,
-            text='Sorry, I have no answer to this.'
+            text='Sorry, I have no answer to this.',
+            confidence=0
         )

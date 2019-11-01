@@ -10,8 +10,7 @@ class App extends Component {
     super(props)
     this.state = {
       conversation: [],
-      text: '',
-      previous: null
+      text: ''
     }
     this.textarea = React.createRef();
     this.handleTextChange = this.handleTextChange.bind(this)
@@ -28,7 +27,7 @@ class App extends Component {
   }
 
   fetchResponse() {
-    const { conversation, text, previous } = this.state
+    const { conversation, text } = this.state
 
     const headers = {
       'Accept': 'application/json',
@@ -43,12 +42,7 @@ class App extends Component {
     if (text) {
       params = {
         method: 'POST',
-        body: JSON.stringify(
-          {
-            text: text,
-            previous: previous
-          }
-        ),
+        body: JSON.stringify({ text }),
         headers
       }
     }
@@ -70,9 +64,8 @@ class App extends Component {
         })
 
         this.setState({
-          conversation: conversation,
-          text: '',
-          previous: result.id
+          conversation,
+          text: ''
         })
       }, error => {
         this.setState({ error })
