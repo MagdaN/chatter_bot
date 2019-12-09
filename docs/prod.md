@@ -15,28 +15,22 @@ In production, you should create a dedicated user for the application. All steps
 useradd -u 2000 -c 'Chatbot' -s /bin/bash -d /srv/chatbot -m chatbot
 ```
 
-Using this user, create a virtual env in the home of this user:
-
-```bash
-# as chatbot
-python3 -m venv env
-
-echo "source ~/env/bin/activate" >> ~/.bashrc
-. ~/.bashrc
-```
-
-Clone the repository and change directory and install the production dependencies:
+Using this user, clone the repository, change directory and create a virtual env in the home of this user:
 
 ```bash
 # as chatbot
 git clone https://github.com/de-hub/chatbot
 cd chatbot
+
+python3 -m venv env
+source env/bin/activate
 ```
 
 Install production dependencies:
 
 ```bash
 # as chatbot
+pip install pip wheel setuptools
 pip install -r requirements/prod.txt
 ```
 
@@ -45,6 +39,7 @@ Create `/srv/chatbot/chatbot/.env` with the folowing content:
 ```bash
 SECRET_KEY=<a long random secret key>
 DATABASE=postgresql://@/chatbot  # user, password, and host are empty when using peer auth
+ALLOWED_HOSTS=<your hostname>
 ```
 
 Create the database user and the database:
@@ -55,11 +50,12 @@ createuser chatbot
 createdb chatbot --owner=chatbot
 ```
 
-Run the database migrations:
+Run the database migrations and create a superuser:
 
 ```bash
 # as chatbot
 ./manage.py migrate
+./manage.py createsuperuser
 ```
 
 #### Front end
@@ -105,7 +101,7 @@ User=chatbot
 Group=chatbot
 WorkingDirectory=/srv/chatbot/chatbot
 EnvironmentFile=/srv/chatbot/chatbot/.env
-ExecStart=/srv/chatbot/env/bin/gunicorn --bind unix:/tmp/chatbot.sock config.wsgi:application
+ExecStart=/srv/chatbot/chatbot/env/bin/gunicorn --bind unix:/tmp/chatbot.sock config.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
