@@ -1,8 +1,8 @@
 -r common.txt
 
 # development only dependencies in aphabetical order
-django-debug-toolbar>=1.11
-httpie>=1.0.2
-pytest-django>=3.5.0
-pytest-cov>=2.7
-pytest-dotenv
+django-debug-toolbar~=2.1
+pytest~=5.3
+pytest-django~=3.7
+pytest-dotenv~=0.4
+pytest-cov~=2.8
