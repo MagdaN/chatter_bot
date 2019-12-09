@@ -8,7 +8,7 @@ apt-get install build-essential python3-dev python3-pip python3-venv
 apt-get install postgresql
 ```
 
-In production, you should create a dedicated user teh application. All steps for the installation, which do not need root access, should be done using this user. We assume this user is called `chatbot`, it’s home is `/srv/chatbot` and the application is located in `/srv/chatbot/chatbot`. The user can be created using:
+In production, you should create a dedicated user for the application. All steps for the installation, which do not need root access, should be done using this user. We assume this user is called `chatbot`, it’s home is `/srv/chatbot` and the application is located in `/srv/chatbot/chatbot`. The user can be created using:
 
 ```bash
 # as root
@@ -60,13 +60,6 @@ Run the database migrations:
 ```bash
 # as chatbot
 ./manage.py migrate
-```
-
-Train the bot:
-
-```bash
-# as chatbot
-./manage.py train
 ```
 
 #### Front end
