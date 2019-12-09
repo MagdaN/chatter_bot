@@ -68,7 +68,7 @@ DEBUG=True
 DATABASE=postgresql://<user>:<password>@<host>:<port>/<database>
 ```
 
-to use [PostgreSQL](https://www.postgresql.org/). See `.env.sample` for all options.
+to use [PostgreSQL](https://www.postgresql.org/). See `.env.sqlite` or `.env.postgresql` for all options.
 
 Then run:
 

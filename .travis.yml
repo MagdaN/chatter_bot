@@ -1,0 +1,34 @@
+language: python
+cache: pip
+dist: bionic
+
+python:
+- 3.6
+- 3.7
+- 3.8
+
+addons:
+  postgresql: '10'
+
+env:
+- DB=postgresql
+- DB=sqlite
+
+before_install:
+- sudo apt-get -qq update
+
+install:
+- pip install --upgrade pip setuptools wheel
+- pip install -r requirements/dev.txt
+- pip install psycopg2-binary
+- pip install coveralls
+
+before_script:
+- sh -c "cp .env.$DB .env; fi"
+- createdb chatbot
+
+script:
+- pytest --cov=chatbot
+
+after_success:
+- coveralls
