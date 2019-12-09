@@ -28,7 +28,7 @@ before_script:
 - createdb chatbot
 
 script:
-- pytest --cov=chatbot
+- pytest --cov
 
 after_success:
 - coveralls
