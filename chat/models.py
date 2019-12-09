@@ -7,6 +7,7 @@ from django_extensions.db.models import TimeStampedModel
 
 from .training import train_file
 
+
 def training_path(instance, filename):
     return 'training/{0}.txt'.format(instance.name)
 

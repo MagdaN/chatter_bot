@@ -1,9 +1,9 @@
 # dependencies in aphabetical order
-chatterbot
-chatterbot-corpus
-Django>=2.2
-django-extensions>=2.1
-django-filter>=2.1
-djangorestframework>=3.9
-dj-database-url>=0.5
-python-dotenv
+chatterbot~=1.0
+chatterbot-corpus~=1.2
+Django~=3.0
+django-extensions>~=2.2
+django-filter~=2.2
+djangorestframework~=3.9
+dj-database-url~=0.5
+python-dotenv~=0.10

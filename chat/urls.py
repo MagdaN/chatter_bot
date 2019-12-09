@@ -13,5 +13,5 @@ router.register(r'chatbot', ChatbotViewSet, basename='chatbot')
 
 urlpatterns = [
     path('', home, name='home'),
-    path('api/', include(router.urls)),
+    path('api/v1/', include(router.urls)),
 ]

@@ -1,4 +1,4 @@
 -r common.txt
 
 # production only dependencies in aphabetical order
-psycopg2-binary>=2.8
+psycopg2-binary~=2.8

@@ -1,7 +1,8 @@
 import logging
 
-from chatterbot import ChatBot
-from chatterbot.trainers import ChatterBotCorpusTrainer, ListTrainer
+from chatterbot import ChatBot, utils
+from chatterbot.trainers import Trainer
+from chatterbot.conversation import Statement
 
 from django.conf import settings
 
@@ -10,17 +11,54 @@ logger = logging.getLogger(__name__)
 
 def train_file(file_name, file):
     chatbot = ChatBot(**settings.CHATTERBOT)
-    trainer = ListTrainer(chatbot)
+    trainer = ChatTrainer(chatbot)
+    statements = file.readlines()
 
-    logger.info('Train using TrainingFile "%s"', file_name)
-    trainer.train(file.readlines())
-    logger.info('Training complete')
+    logger.info('training file = "%s"', file_name)
+    logger.debug('training lines = %s', statements)
+    trainer.train(statements)
+    logger.info('training complete')
 
 
-def train_corpus(corpus_name):
-    chatbot = ChatBot(**settings.CHATTERBOT)
-    trainer = ChatterBotCorpusTrainer(chatbot)
+class ChatTrainer(Trainer):
 
-    logger.info('Train using corpus "%s"', corpus_name)
-    trainer.train(corpus_name)
-    logger.info('Training complete')
+    def train(self, conversation):
+        previous_statement_text = None
+        previous_statement_search_text = ''
+
+        statements_to_create = []
+
+        for conversation_count, text in enumerate(conversation):
+            if self.show_training_progress:
+                utils.print_progress_bar(
+                    'List Trainer',
+                    conversation_count + 1, len(conversation)
+                )
+
+            if conversation_count % 2:
+                persona = 'bot:ChatTrainer'
+            else:
+                persona = 'user:ChatTrainer'
+
+            statement_search_text = self.chatbot.storage.tagger.get_bigram_pair_string(text)
+
+            statement = self.get_preprocessed_statement(
+                Statement(
+                    text=text,
+                    search_text=statement_search_text,
+                    in_response_to=previous_statement_text,
+                    search_in_response_to=previous_statement_search_text,
+                    conversation='training',
+                    persona=persona
+                )
+            )
+
+            if conversation_count == 0:
+                statement.add_tags('start')
+
+            previous_statement_text = statement.text
+            previous_statement_search_text = statement_search_text
+
+            statements_to_create.append(statement)
+
+        self.chatbot.storage.create_many(statements_to_create)

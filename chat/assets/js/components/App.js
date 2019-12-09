@@ -1,21 +1,80 @@
 import React, { Component} from "react"
 import Cookies from 'js-cookie';
 
+
+const apiUrl = '/api/v1/chatbot/'
+
 class App extends Component {
 
   constructor (props) {
     super(props)
     this.state = {
-      text: '',
-      conversation: []
+      conversation: [],
+      text: ''
     }
+    this.textarea = React.createRef();
     this.handleTextChange = this.handleTextChange.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleTextChange (e) {
-    this.setState({text: e.target.value})
+  componentDidMount() {
+    this.fetchResponse()
+  }
+
+  componentDidUpdate(){
+     this.textarea.current.focus()
+  }
+
+  fetchResponse() {
+    const { conversation, text } = this.state
+
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-CSRFToken': Cookies.get('csrftoken')
+    }
+
+    let params = {
+      method: 'GET',
+      headers
+    }
+    if (text) {
+      params = {
+        method: 'POST',
+        body: JSON.stringify({ text }),
+        headers
+      }
+    }
+
+    fetch(apiUrl, params)
+      .then(response => response.json())
+      .then(result => {
+        const { conversation, text } = this.state
+
+        if (text) {
+          conversation.push({
+            persona: 'client',
+            text: text
+          })
+        }
+        conversation.push({
+          persona: result.persona,
+          text: result.text
+        })
+
+        this.setState({
+          conversation,
+          text: ''
+        })
+      }, error => {
+        this.setState({ error })
+      }
+    )
+  }
+
+  handleTextChange(e) {
+    this.setState({ text: e.target.value })
   }
 
   handleKeyDown(e) {
@@ -27,45 +86,11 @@ class App extends Component {
   handleSubmit (e) {
     e.preventDefault()
 
-    let text = this.state.text.trim()
-    if (!text) {
+    if (!this.state.text) {
       return
     }
 
-    const apiUrl = '/api/chatbot/'
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-CSRFToken': Cookies.get('csrftoken')
-    }
-
-    const params = {
-      method: 'POST',
-      body: JSON.stringify({text: text}),
-      headers
-    }
-
-    fetch(apiUrl, params)
-      .then(response => response.json())
-      .then(result => {
-        let conversation = this.state.conversation
-        conversation.push({
-          type: 'chat__item--user',
-          text: this.state.text
-        })
-        conversation.push({
-          type: 'chat__item--chatbot',
-          text: result.text
-        })
-        this.setState({
-          conversation: conversation,
-          text: ''
-        })
-      }, error => {
-        this.setState({ error })
-      }
-    )
+    this.fetchResponse()
   }
 
   render() {
@@ -76,18 +101,21 @@ class App extends Component {
         <div className='col-md-6 offset-md-3'>
           {
             conversation.map((item, i) => {
-              return <div className={item.type} key={i}>{item.text}</div>
+              const className = item.persona == 'bot:ChatBot' ? 'chat__item--chatbot' : 'chat__item--user'
+              return (
+                <div key={i} className={className}>{item.text}</div>
+              )
             })
           }
         <form className="chat__item--user" onSubmit={this.handleSubmit}>
           <div className="form-group">
             <textarea
               className="form-control"
-              placeholder={gettext('Ask something')}
               value={text}
               required="required"
               onChange={this.handleTextChange}
               onKeyDown={this.handleKeyDown}
+              ref={this.textarea}
             />
           </div>
           <input type="submit" className="btn btn-primary" value={gettext('Submit')}/>
@@ -95,8 +123,7 @@ class App extends Component {
         </div>
       </div>
     )
- }
-
+  }
 }
 
 export default App
