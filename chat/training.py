@@ -1,9 +1,8 @@
 import logging
 
 from chatterbot import ChatBot, utils
-from chatterbot.trainers import Trainer
 from chatterbot.conversation import Statement
-
+from chatterbot.trainers import Trainer
 from django.conf import settings
 
 logger = logging.getLogger(__name__)

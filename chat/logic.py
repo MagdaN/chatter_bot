@@ -1,5 +1,5 @@
-from chatterbot.logic import BestMatch
 from chatterbot.conversation import Statement
+from chatterbot.logic import BestMatch
 
 
 class ChatAdapter(BestMatch):
@@ -9,7 +9,9 @@ class ChatAdapter(BestMatch):
         session_texts = additional_response_selection_parameters.pop('session_texts', [])
 
         # add start tag if there is no previous text
-        search_parameters = {}
+        search_parameters = {
+            'order_by': ['created_at']
+        }
         if not session_texts:
             self.chatbot.logger.info('No session texts, adding "start" tag to search_parameters')
             search_parameters['tags'] = ['start']
