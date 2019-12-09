@@ -1,8 +1,7 @@
 import os
 
-from django.utils.translation import gettext_lazy as _
-
 import dj_database_url
+from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -14,6 +13,8 @@ except KeyError:
 DEBUG = (os.getenv('DEBUG', 'False').upper() == 'TRUE')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1 ::1').split()
+
+INTERNAL_IPS = ['127.0.0.1']
 
 INSTALLED_APPS = [
     # django apps
@@ -34,7 +35,8 @@ INSTALLED_APPS = [
 
 if DEBUG:
     INSTALLED_APPS += [
-        'django_extensions'
+        'django_extensions',
+        'debug_toolbar',
     ]
 
 MIDDLEWARE = [
@@ -47,6 +49,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE = [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ] + MIDDLEWARE
 
 ROOT_URLCONF = 'config.urls'
 
