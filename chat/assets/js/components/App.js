@@ -10,7 +10,8 @@ class App extends Component {
     super(props)
     this.state = {
       conversation: [],
-      text: ''
+      text: '',
+      loading: false
     }
     this.textarea = React.createRef();
     this.handleTextChange = this.handleTextChange.bind(this)
@@ -23,7 +24,18 @@ class App extends Component {
   }
 
   componentDidUpdate(){
-     this.textarea.current.focus()
+      if (!this.state.loading) {
+        this.textarea.current.focus()
+      }
+  }
+
+  calculateLoadingTime(text) {
+    if (this.state.loading) {
+      const textLenght = text.length
+      return textLenght * 50
+    } else {
+      return 0
+    }
   }
 
   fetchResponse() {
@@ -52,21 +64,20 @@ class App extends Component {
       .then(result => {
         const { conversation, text } = this.state
 
-        if (text) {
-          conversation.push({
-            persona: 'client',
-            text: text
-          })
-        }
         conversation.push({
           persona: result.persona,
           text: result.text
         })
 
-        this.setState({
-          conversation,
-          text: ''
-        })
+        setTimeout(function () {
+          this.setState({
+            conversation,
+            text: '',
+            loading: false
+          })
+        }.bind(this), this.calculateLoadingTime(result.text))
+
+
       }, error => {
         this.setState({ error })
       }
@@ -89,8 +100,12 @@ class App extends Component {
     if (!this.state.text) {
       return
     }
-
-    this.fetchResponse()
+    const { conversation, text } = this.state
+    conversation.push({
+      persona: 'client',
+      text: text
+    })
+    this.setState({ conversation, loading: true }, this.fetchResponse)
   }
 
   render() {
@@ -107,6 +122,20 @@ class App extends Component {
               )
             })
           }
+          { this.state.loading &&
+            <div>
+              <div className="spinner-grow spinner-grow-sm" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+              <div className="spinner-grow spinner-grow-sm" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+              <div className="spinner-grow spinner-grow-sm" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </div>
+          }
+        { !this.state.loading &&
         <form className="chat__item--user" onSubmit={this.handleSubmit}>
           <div className="form-group">
             <textarea
@@ -120,6 +149,7 @@ class App extends Component {
           </div>
           <input type="submit" className="btn btn-primary" value={gettext('Submit')}/>
         </form>
+        }
         </div>
       </div>
     )
