@@ -1,44 +1,56 @@
-import json
-
-from rest_framework.viewsets import GenericViewSet
+from django.conf import settings
+from django.contrib.postgres.search import TrigramSimilarity
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
-from chatterbot import ChatBot
-from chatterbot.ext.django_chatterbot import settings
-from chatterbot.conversation import Statement
-
-# from .bot import ChatBot
-from .serializers import ChatbotSerializer
+from .models import Statement
+from .serializers import StatementCreateSerializer, StatementSerializer
 
 
 class ChatbotViewSet(GenericViewSet):
 
-    serializer_class = ChatbotSerializer
-
-    chatterbot = ChatBot(**settings.CHATTERBOT)
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return StatementCreateSerializer
+        else:
+            return StatementSerializer
 
     def list(self, request, *args, **kwargs):
-        response = Statement(text='How can I help you?', persona='bot:ChatBot')
+        statement = {
+            'id': None,
+            'request': None,
+            'response': 'How can I help you?',
+        }
 
-        # (re-)init session
-        request.session['texts'] = json.dumps([])
-
-        return Response(response.serialize(), status=200)
+        serializer = StatementSerializer(statement)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = StatementCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        text = serializer.data['text']
-        session_texts = json.loads(request.session['texts'])
+        in_response_to = serializer.data.get('in_response_to')
+        request = serializer.data.get('request')
+        if in_response_to is not None:
+            parent = Statement.objects.get(pk=in_response_to)
+        else:
+            parent = None
 
-        response = self.chatterbot.get_response(text, additional_response_selection_parameters={
-            'session_texts': session_texts
-        })
+        # filter a statement that respond to the last statement and order by similarity
+        statements = Statement.objects.filter(parent=parent) \
+                              .annotate(similarity=TrigramSimilarity('request', request)) \
+                              .filter(similarity__gt=settings.SIMILARITY_THRESHOLD) \
+                              .order_by('-similarity')
 
-        # only add text to session if it was a proper response
-        if response.confidence > 0:
-            session_texts.append(response.text)
-            request.session['texts'] = json.dumps(session_texts)
+        if statements:
+            statement = statements.first()
+        else:
+            statement = {
+                'id': in_response_to,
+                'request': None,
+                'response': 'Sorry, I don\'t know what that means.',
+            }
 
-        return Response(response.serialize(), status=200)
+        # return the first statement
+        serializer = StatementSerializer(statement)
+        return Response(serializer.data)
