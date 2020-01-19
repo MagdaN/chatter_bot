@@ -44,10 +44,11 @@ ALLOWED_HOSTS=<your hostname>
 
 Create the database user and the database:
 
-```bash
-# as postgres user
-createuser chatbot
-createdb chatbot --owner=chatbot
+```sql
+CREATE ROLE chatbot;
+CREATE DATABASE chatbot OWNER chatbot;
+\c chatbot
+CREATE EXTENSION pg_trgm;
 ```
 
 Run the database migrations and create a superuser:
