@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 
 
 const apiUrl = '/api/v1/chatbot/'
+const loadingTimeFactor = 20;
 
 class App extends Component {
 
@@ -32,7 +33,7 @@ class App extends Component {
   calculateLoadingTime(text) {
     if (this.state.loading) {
       const textLenght = text.length
-      return textLenght * 5
+      return textLenght * loadingTimeFactor
     } else {
       return 0
     }
