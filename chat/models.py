@@ -11,21 +11,21 @@ def training_path(instance, filename):
     return 'training/{0}.txt'.format(instance.name)
 
 
-class TrainingFile(TimeStampedModel):
+class Conversation(TimeStampedModel):
 
     name = models.CharField(max_length=64, unique=True)
     file = models.FileField(upload_to=training_path)
 
     class Meta:
         ordering = ('created', )
-        verbose_name = _('TrainingFile')
-        verbose_name_plural = _('TrainingFiles')
+        verbose_name = _('Conversation')
+        verbose_name_plural = _('Conversation')
 
     def __str__(self):
         return self.name
 
     def train(self):
-        Statement.objects.filter(training_file=self).delete()
+        Statement.objects.filter(conversation=self).delete()
 
         with self.file.open() as f:
             statements = yaml.safe_load(f.read())
@@ -35,7 +35,7 @@ class TrainingFile(TimeStampedModel):
         for training_statement in training_statements:
             statement = Statement(
                 parent=parent,
-                training_file=self,
+                conversation=self,
                 request=training_statement['request'],
                 response=training_statement['response'])
             statement.save()
@@ -44,20 +44,20 @@ class TrainingFile(TimeStampedModel):
                 self.train_statement(training_statement['children'], parent=statement)
 
 
-@receiver(post_save, sender=TrainingFile)
-def handle_training_file_save(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Conversation)
+def handle_conversation_save(sender, instance, created, **kwargs):
     instance.train()
 
 
-@receiver(post_delete, sender=TrainingFile)
-def handle_training_file_delete(sender, instance, **kwargs):
+@receiver(post_delete, sender=Conversation)
+def handle_conversation_delete(sender, instance, **kwargs):
     instance.file.delete(False)
 
 
 class Statement(MPTTModel):
 
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
-    training_file = models.ForeignKey(TrainingFile, on_delete=models.CASCADE, related_name='statements')
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='statements')
 
     request = models.TextField()
     response = models.TextField()
@@ -66,7 +66,7 @@ class Statement(MPTTModel):
         return self.request
 
     class Meta:
-        ordering = ('training_file', )
+        ordering = ('conversation', )
         verbose_name = _('Statement')
         verbose_name_plural = _('Statements')
 
