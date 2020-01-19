@@ -10,10 +10,6 @@ python:
 addons:
   postgresql: '10'
 
-env:
-- DB=postgresql
-- DB=sqlite
-
 before_install:
 - sudo apt-get -qq update
 
@@ -24,7 +20,7 @@ install:
 - pip install coveralls
 
 before_script:
-- sh -c "cp .env.$DB .env; fi"
+- sh -c "cp .env.sample .env; fi"
 - createdb chatbot
 
 script:
