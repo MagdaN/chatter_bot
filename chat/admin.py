@@ -14,7 +14,7 @@ train.short_description = _('Train selected Conversation again')
 
 @admin.register(Conversation)
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'created', 'modified')
+    list_display = ('__str__', 'created', 'modified')
     actions = [train]
 
 
