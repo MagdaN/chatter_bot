@@ -118,7 +118,8 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 
-SIMILARITY_THRESHOLD = 0.1
+LOGIC_ADAPTER = os.getenv('LOGIC_ADAPTER', 'chat.logic.LevenshteinDistance')
+LOGIC_THRESHOLD = float(os.getenv('LOGIC_THRESHOLD', '0.1'))
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 LOG_DIR = os.getenv('LOG_DIR')

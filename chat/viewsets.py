@@ -1,5 +1,6 @@
+import importlib
+
 from django.conf import settings
-from django.contrib.postgres.search import TrigramSimilarity
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -15,6 +16,10 @@ class ChatbotViewSet(GenericViewSet):
         else:
             return StatementSerializer
 
+    def get_logic_adapter_class(self):
+        module_name, class_name = settings.LOGIC_ADAPTER.rsplit('.', 1)
+        return getattr(importlib.import_module(module_name), class_name)
+
     def list(self, request, *args, **kwargs):
         statement = {
             'id': None,
@@ -29,6 +34,9 @@ class ChatbotViewSet(GenericViewSet):
         serializer = StatementCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        logic_adapter_class = self.get_logic_adapter_class()
+        logic_adapter = logic_adapter_class()
+
         in_response_to = serializer.data.get('in_response_to')
         request = serializer.data.get('request')
         if in_response_to is not None:
@@ -36,21 +44,17 @@ class ChatbotViewSet(GenericViewSet):
         else:
             parent = None
 
-        # filter a statement that respond to the last statement and order by similarity
-        statements = Statement.objects.filter(parent=parent) \
-                              .annotate(similarity=TrigramSimilarity('request', request)) \
-                              .filter(similarity__gt=settings.SIMILARITY_THRESHOLD) \
-                              .order_by('-similarity')
+        # filter a statement that respond to the last statement
+        responses = Statement.objects.filter(parent=parent)
+        response = logic_adapter.process(request, responses)
 
-        if statements:
-            statement = statements.first()
-        else:
-            statement = {
+        if not response:
+            response = {
                 'id': in_response_to,
                 'request': None,
                 'response': 'Sorry, I don\'t know what that means.',
             }
 
         # return the first statement
-        serializer = StatementSerializer(statement)
+        serializer = StatementSerializer(response)
         return Response(serializer.data)
