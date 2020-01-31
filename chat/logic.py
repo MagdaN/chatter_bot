@@ -1,5 +1,9 @@
+import logging
+
 from django.conf import settings
 from django.contrib.postgres.search import TrigramSimilarity
+
+logger = logging.getLogger(__name__)
 
 
 class LogicAdapte():
@@ -22,17 +26,18 @@ class LevenshteinDistance():
                 best_similarity = similarity
                 best_statement = statement
 
-        return best_statement
+        return best_statement, best_similarity
 
 
 class PostgresTrigramSimilarity():
 
     def process(self, request, statements):
         ordered_responses = statements.annotate(similarity=TrigramSimilarity('request', request)) \
-          .filter(similarity__gt=settings.LOGIC_THRESHOLD) \
-          .order_by('-similarity')
+                                      .filter(similarity__gt=settings.LOGIC_THRESHOLD) \
+                                      .order_by('-similarity')
 
         if ordered_responses:
-            return ordered_responses.first()
+            response = ordered_responses.first()
+            return response, response.similarity
         else:
             return None
