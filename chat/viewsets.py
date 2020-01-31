@@ -24,7 +24,7 @@ class ChatbotViewSet(GenericViewSet):
         statement = {
             'id': None,
             'request': None,
-            'response': 'How can I help you?',
+            'response': settings.RESPONSES.get('initial'),
         }
 
         serializer = StatementSerializer(statement)
@@ -52,7 +52,7 @@ class ChatbotViewSet(GenericViewSet):
             response = {
                 'id': in_response_to,
                 'request': None,
-                'response': 'Sorry, I don\'t know what that means.',
+                'response': settings.RESPONSES.get('unknown'),
             }
 
         # return the first statement

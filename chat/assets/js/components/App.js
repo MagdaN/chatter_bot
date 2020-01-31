@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 
 
 const apiUrl = '/api/v1/chatbot/'
-const loadingTimeFactor = 20;
+const loadingTimeFactor = 10;
 
 class App extends Component {
 
@@ -103,10 +103,16 @@ class App extends Component {
       return
     }
 
+    let in_response_to = last_statement.id
+    if (last_statement.conclusion) {
+      // lets start a new thread
+      in_response_to = null
+    }
+
     conversation.push({
       persona: 'user',
       request: value,
-      in_response_to: last_statement.id
+      in_response_to: in_response_to
     })
     this.setState({ conversation, loading: true }, this.fetchResponse)
   }
@@ -121,11 +127,16 @@ class App extends Component {
             conversation.map((statement, i) => {
               if (statement.persona == 'user') {
                 return (
-                  <div key={i} className={'chat__statement--user'}>{statement.request}</div>
+                  <div key={i}>
+                    <div className={'chat__statement--user'}>{statement.request}</div>
+                  </div>
                 )
               } else {
                 return (
-                  <div key={i} className={'chat__statement--chatbot'}>{statement.response}</div>
+                  <div key={i}>
+                    <div className={'chat__statement--chatbot'}>{statement.response}</div>
+                    {statement.conclusion && <div className={'chat__statement--chatbot'}>{statement.conclusion}</div>}
+                  </div>
                 )
               }
             })

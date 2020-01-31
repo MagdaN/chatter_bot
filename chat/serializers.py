@@ -5,12 +5,15 @@ from .models import Statement
 
 class StatementSerializer(serializers.ModelSerializer):
 
+    conclusion = serializers.CharField(default=None)
+
     class Meta:
         model = Statement
         fields = (
             'id',
             'request',
-            'response'
+            'response',
+            'conclusion'
         )
 
 

@@ -118,6 +118,12 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 
+RESPONSES = {
+    'initial': 'How can I help you?',
+    'unknown': 'Sorry, I don\'t know what that means.',
+    'conclusion': 'This is all I can tell you about this topic. Do you have more questions?'
+}
+
 LOGIC_ADAPTER = os.getenv('LOGIC_ADAPTER', 'chat.logic.LevenshteinDistance')
 LOGIC_THRESHOLD = float(os.getenv('LOGIC_THRESHOLD', '0.1'))
 

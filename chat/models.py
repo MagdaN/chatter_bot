@@ -1,6 +1,7 @@
 import os
 
 import yaml
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_delete, post_save
@@ -83,3 +84,8 @@ class Statement(MPTTModel):
     @property
     def is_root(self):
         return self.parent is None
+
+    @property
+    def conclusion(self):
+        if not self.children.exists():
+            return settings.RESPONSES.get('conclusion')
