@@ -44,55 +44,55 @@ All further steps need to be performed using the windows shell `cmd.exe`. You ca
 Application setup
 -----------------
 
+First, create a database with the `pg_trgm` extension in PostgreSQL using, e.g.:
+
+```sql
+CREATE ROLE chatbot WITH PASSWORD 'chatbot';
+CREATE DATABASE chatbot OWNER chatbot;
+\c chatbot
+CREATE EXTENSION pg_trgm;
+```
+
 Create a virtual environment and install the Python dependencies:
 
-```
+```bash
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements/dev.txt
 ```
 
-Create `.env` file with:
+Create `.env` file with, e.g.:
 
-```
+```python
 SECRET_KEY=<key>
 DEBUG=True
-DATABASE=sqlite:///<database>.sqlite3
+DATABASE=postgresql://chatbot:<password>@<host>:<port>/<database>
 ```
 
-to use [SQLite](https://www.sqlite.org) as database, or
-
-```
-SECRET_KEY=<key>
-DEBUG=True
-DATABASE=postgresql://<user>:<password>@<host>:<port>/<database>
-```
-
-to use [PostgreSQL](https://www.postgresql.org/). See `.env.sqlite` or `.env.postgresql` for all options.
+See `.env.sample` for all options.
 
 Then run:
 
-```
-./manage.py sqlcreate        # to obtain the commands to create the database (postgres only)
+```bash
 ./manage.py migrate          # to populate the database
 ./manage.py createsuperuser  # to create an admin user
 ```
 
 Start the development server using:
 
-```
+```bash
 ./manage.py runserver
 ```
 
 Install the front-end dependencies and build the static files using:
 
-```
+```bash
 npm install
 npm run build
 ```
 
 Start the webpack watch mode using:
 
-```
+```bash
 npm run watch
 ```

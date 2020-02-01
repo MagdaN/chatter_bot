@@ -1,40 +1,91 @@
+import os
+
+import yaml
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-
 from django_extensions.db.models import TimeStampedModel
-
-from .training import train_file
-
-
-def training_path(instance, filename):
-    return 'training/{0}.txt'.format(instance.name)
+from mptt.models import MPTTModel, TreeForeignKey
 
 
-class TrainingFile(TimeStampedModel):
+def training_path(instance, file_name):
+    return os.path.join('training', file_name)
 
-    name = models.CharField(max_length=64, unique=True)
+
+class Conversation(TimeStampedModel):
+
     file = models.FileField(upload_to=training_path)
 
     class Meta:
         ordering = ('created', )
-        verbose_name = _('TrainingFile')
-        verbose_name_plural = _('TrainingFiles')
+        verbose_name = _('Conversation')
+        verbose_name_plural = _('Conversation')
 
     def __str__(self):
-        return self.name
+        basename = os.path.basename(self.file.name)
+        root, ext = os.path.splitext(basename)
+        return root
+
+    def clean(self):
+        try:
+            yaml.safe_load(self.file.open().read())
+        except (yaml.scanner.ScannerError, yaml.parser.ParserError) as e:
+            raise ValidationError(e)
 
     def train(self):
-        train_file(self.name, self.file.open('r'))
+        Statement.objects.filter(conversation=self).delete()
+
+        with self.file.open() as f:
+            statements = yaml.safe_load(f.read())
+            self.train_statement(statements)
+
+    def train_statement(self, training_statements, parent=None):
+        for training_statement in training_statements:
+            statement = Statement(
+                parent=parent,
+                conversation=self,
+                request=training_statement['request'],
+                response=training_statement['response'])
+            statement.save()
+
+            if 'children' in training_statement:
+                self.train_statement(training_statement['children'], parent=statement)
 
 
-@receiver(post_save, sender=TrainingFile)
-def handle_training_file_save(sender, instance, created, **kwargs):
-    if created:
-        instance.train()
+@receiver(post_save, sender=Conversation)
+def handle_conversation_save(sender, instance, created, **kwargs):
+    instance.train()
 
 
-@receiver(post_delete, sender=TrainingFile)
-def handle_training_file_delete(sender, instance, **kwargs):
+@receiver(post_delete, sender=Conversation)
+def handle_conversation_delete(sender, instance, **kwargs):
     instance.file.delete(False)
+
+
+class Statement(MPTTModel):
+
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='statements')
+
+    request = models.TextField()
+    response = models.TextField()
+
+    def __str__(self):
+        return self.request
+
+    class Meta:
+        ordering = ('conversation', )
+        verbose_name = _('Statement')
+        verbose_name_plural = _('Statements')
+
+    @property
+    def is_root(self):
+        return self.parent is None
+
+    @property
+    def conclusion(self):
+        if not self.children.exists():
+            return settings.RESPONSES.get('conclusion')

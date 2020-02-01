@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 
 
 const apiUrl = '/api/v1/chatbot/'
+const loadingTimeFactor = 10;
 
 class App extends Component {
 
@@ -10,7 +11,7 @@ class App extends Component {
     super(props)
     this.state = {
       conversation: [],
-      text: '',
+      value: '',
       loading: false
     }
     this.textarea = React.createRef();
@@ -32,14 +33,15 @@ class App extends Component {
   calculateLoadingTime(text) {
     if (this.state.loading) {
       const textLenght = text.length
-      return textLenght * 50
+      return textLenght * loadingTimeFactor
     } else {
       return 0
     }
   }
 
   fetchResponse() {
-    const { conversation, text } = this.state
+    const { conversation } = this.state
+    const [ last_statement ] = conversation.slice(-1)
 
     const headers = {
       'Accept': 'application/json',
@@ -51,31 +53,28 @@ class App extends Component {
       method: 'GET',
       headers
     }
-    if (text) {
+    if (conversation.length) {
       params = {
         method: 'POST',
-        body: JSON.stringify({ text }),
+        body: JSON.stringify(last_statement),
         headers
       }
     }
 
     fetch(apiUrl, params)
       .then(response => response.json())
-      .then(result => {
-        const { conversation, text } = this.state
+      .then(statement => {
+        const { conversation } = this.state
 
-        conversation.push({
-          persona: result.persona,
-          text: result.text
-        })
+        conversation.push(statement)
 
         setTimeout(function () {
           this.setState({
             conversation,
-            text: '',
+            value: '',
             loading: false
           })
-        }.bind(this), this.calculateLoadingTime(result.text))
+        }.bind(this), this.calculateLoadingTime(statement.response))
 
 
       }, error => {
@@ -85,7 +84,7 @@ class App extends Component {
   }
 
   handleTextChange(e) {
-    this.setState({ text: e.target.value })
+    this.setState({ value: e.target.value })
   }
 
   handleKeyDown(e) {
@@ -97,29 +96,49 @@ class App extends Component {
   handleSubmit (e) {
     e.preventDefault()
 
-    if (!this.state.text) {
+    const { conversation, value } = this.state
+    const [ last_statement ] = conversation.slice(-1)
+
+    if (!value) {
       return
     }
-    const { conversation, text } = this.state
+
+    let in_response_to = last_statement.id
+    if (last_statement.conclusion) {
+      // lets start a new thread
+      in_response_to = null
+    }
+
     conversation.push({
-      persona: 'client',
-      text: text
+      persona: 'user',
+      request: value,
+      in_response_to: in_response_to
     })
     this.setState({ conversation, loading: true }, this.fetchResponse)
   }
 
   render() {
-    const { conversation, text } = this.state
+    const { conversation, value } = this.state
 
     return(
       <div className='row chat'>
         <div className='col-md-6 offset-md-3'>
           {
-            conversation.map((item, i) => {
-              const className = item.persona == 'bot:ChatBot' ? 'chat__item--chatbot' : 'chat__item--user'
-              return (
-                <div key={i} className={className}>{item.text}</div>
-              )
+            conversation.map((statement, i) => {
+              if (statement.persona == 'user') {
+                return (
+                  <div key={i}>
+                    <div className={'chat__statement--user'}>{statement.request}</div>
+                  </div>
+                )
+              } else {
+                return (
+                  <div key={i}>
+                    <div className={'chat__statement--chatbot'}>{statement.response}</div>
+                    {statement.conclusion && <div className={'chat__statement--chatbot'}>{statement.conclusion}</div>}
+                  </div>
+                )
+              }
             })
           }
           { this.state.loading &&
@@ -136,11 +155,11 @@ class App extends Component {
             </div>
           }
         { !this.state.loading &&
-        <form className="chat__item--user" onSubmit={this.handleSubmit}>
+        <form className="chat__statement--user" onSubmit={this.handleSubmit}>
           <div className="form-group">
             <textarea
               className="form-control"
-              value={text}
+              value={value}
               required="required"
               onChange={this.handleTextChange}
               onKeyDown={this.handleKeyDown}

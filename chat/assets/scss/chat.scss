@@ -1,18 +1,18 @@
-.chat__item {
+.chat__statement {
 	padding: 1rem;
 	margin: 1rem;
 	border: 1px solid $gray-400;
 	border-radius: 0.25rem;
 }
 
-.chat__item--user {
-	@extend .chat__item;
+.chat__statement--user {
+	@extend .chat__statement;
 	margin-left: 4rem;
 	margin-right: 0;
 }
 
-.chat__item--chatbot {
-	@extend .chat__item;
+.chat__statement--chatbot {
+	@extend .chat__statement;
 	margin-right: 4rem;
 	margin-left: 0;
 }

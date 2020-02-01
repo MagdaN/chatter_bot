@@ -24,13 +24,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     # local apps
     'chat',
     # 3rd party apps
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
-    'chatterbot.ext.django_chatterbot',
+    'mptt',
 ]
 
 if DEBUG:
@@ -82,20 +83,21 @@ try:
 except KeyError:
     raise RuntimeError('No DATABASE in .env')
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+if not DEBUG:
+    AUTH_PASSWORD_VALIDATORS = [
+        {
+            'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        },
+    ]
 
 LANGUAGE_CODE = 'en-us'
 
@@ -116,19 +118,14 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 
-CHATTERBOT = {
-    'name': 'ChatBot',
-    'read_only': True,
-    'preprocessors': [
-        'chatterbot.preprocessors.clean_whitespace',
-        'chatterbot.preprocessors.convert_to_ascii'
-    ],
-    'logic_adapters': [
-        'chat.logic.ChatAdapter'
-    ],
-    'storage_adapter': 'chatterbot.storage.DjangoStorageAdapter',
-    'maximum_similarity_threshold': 0.5
+RESPONSES = {
+    'initial': 'How can I help you?',
+    'unknown': 'Sorry, I don\'t know what that means.',
+    'conclusion': 'This is all I can tell you about this topic. Do you have more questions?'
 }
+
+LOGIC_ADAPTER = os.getenv('LOGIC_ADAPTER', 'chat.logic.LevenshteinDistance')
+LOGIC_THRESHOLD = float(os.getenv('LOGIC_THRESHOLD', '0.1'))
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 LOG_DIR = os.getenv('LOG_DIR')
@@ -167,12 +164,6 @@ if LOG_DIR:
                 'filename': os.path.join(LOG_DIR, 'error.log'),
                 'formatter': 'default'
             },
-            'chatterbot_log': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(LOG_DIR, 'chatterbot.log'),
-                'formatter': 'name'
-            },
             'chat_log': {
                 'level': 'DEBUG',
                 'class': 'logging.FileHandler',
@@ -185,11 +176,6 @@ if LOG_DIR:
                 'handlers': ['mail_admins', 'error_log'],
                 'level': 'ERROR',
                 'propagate': True
-            },
-            'chatterbot': {
-                'handlers': ['chatterbot_log'],
-                'level': LOG_LEVEL,
-                'propagate': False
             },
             'chat': {
                 'handlers': ['chat_log'],
