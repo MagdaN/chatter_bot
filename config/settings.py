@@ -127,6 +127,8 @@ RESPONSES = {
 LOGIC_ADAPTER = os.getenv('LOGIC_ADAPTER', 'chat.logic.NaturalLanguageProcessor')
 LOGIC_THRESHOLD = float(os.getenv('LOGIC_THRESHOLD', '0.1'))
 
+NLTK_DATA = os.getenv('NLTK_DATA')
+
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 LOG_DIR = os.getenv('LOG_DIR')
 if LOG_DIR:
