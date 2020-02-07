@@ -5,7 +5,6 @@ First, install the prerequisites system (we assume Debian or Ubuntu here):
 
 ```bash
 apt-get install build-essential python3-dev python3-pip python3-venv
-apt-get install postgresql
 ```
 
 In production, you should create a dedicated user for the application. All steps for the installation, which do not need root access, should be done using this user. We assume this user is called `chatbot`, it’s home is `/srv/chatbot` and the application is located in `/srv/chatbot/chatbot`. The user can be created using:
@@ -30,25 +29,32 @@ Install production dependencies:
 
 ```bash
 # as chatbot
-pip install pip wheel setuptools
+pip install --upgrade pip wheel setuptools
 pip install -r requirements/prod.txt
+pip install psychopg2-binary  # for PostgreSQL
+pip install mysqlclient       # for MySQL
 ```
 
 Create `/srv/chatbot/chatbot/.env` with the folowing content:
 
 ```bash
 SECRET_KEY=<a long random secret key>
-DATABASE=postgresql://@/chatbot  # user, password, and host are empty when using peer auth
+DATABASE=postgresql://@/chatbot                      # for PostgreSQL, using peer auth
+DATABASE=mysql://chatbot:<password>@localhost/chatbot  # for MySQL
 ALLOWED_HOSTS=<your hostname>
 ```
 
 Create the database user and the database:
 
 ```sql
+# for PostgreSQL
 CREATE ROLE chatbot;
 CREATE DATABASE chatbot OWNER chatbot;
-\c chatbot
-CREATE EXTENSION pg_trgm;
+
+# for MySQL
+CREATE USER 'chatbot'@'localhost' identified by '<password>';
+CREATE DATABASE `chatbot` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON `chatbot`.* to 'chatbot'@'localhost';
 ```
 
 Run the database migrations and create a superuser:
@@ -82,13 +88,6 @@ npm run build:prod
 
 #### Gunicorn setup
 
-Install gunicorn:
-
-```bash
-# as chatbot
-pip install -r requirements/gunicorn.txt
-```
-
 Systemd will launch the Gunicorn process on startup and keep running. Create a new systemd service file (you will need root/sudo permissions for that):
 
 ```
@@ -102,7 +101,7 @@ User=chatbot
 Group=chatbot
 WorkingDirectory=/srv/chatbot/chatbot
 EnvironmentFile=/srv/chatbot/chatbot/.env
-ExecStart=/srv/chatbot/chatbot/env/bin/gunicorn --bind unix:/tmp/chatbot.sock config.wsgi:application
+ExecStart=/srv/chatbot/chatbot/env/bin/gunicorn --bind 127.0.0.1:9000 config.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -142,7 +141,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header Host $http_host;
-        proxy_pass http://unix:/tmp/chatbot.sock;
+        proxy_pass http://127.0.0.1:9000;
     }
     location /static/ {
         alias /srv/chatbot/chatbot/static_root/;
@@ -159,7 +158,52 @@ nginx -t
 systemctl reload nginx
 ```
 
-The application should now be available on YOURDOMAIN. Note that the unix socket needs to be accessible by NGINX.
+The application should now be available on YOURDOMAIN.
+
+#### Apache2
+
+Alternatively to NGINX, install Apache2:
+
+```bash
+# as root
+sudo apt-get install apache2
+a2enmod proxy
+a2enmod proxy_http
+```
+
+Create the Apache2 configuration as follows (again with root/sudo permissions):
+
+```
+# /etc/apache2/sites-available/chatbot.conf
+<VirtualHost *:80>
+    ServerName <hostname>
+    ServerAdmin <emain>
+    DocumentRoot /var/www/html
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    Alias /static/ /srv/chatbot/chatbot/static_root/
+    <Directory /srv/chatbot/chatbot/static_root/>
+        Require all granted
+    </Directory>
+
+    ProxyPass /static !
+    ProxyPass / http://localhost:9000/
+    ProxyPassReverse / http://localhost:9000/
+</VirtualHost>
+```
+
+Enable the site:
+
+```bash
+# as root
+a2ensite chatbot.conf
+apachectl -S
+systemctl reload apache2
+```
+
+#### Collect static files
 
 As you can see from the virtual host configurations, the static assets such as CSS and JavaScript files are served independently from the reverse proxy to the gunicorn process. In order to do so they need to be gathered in the `static_root` directory. This can be achieved by running:
 
@@ -175,7 +219,8 @@ Install the NGINX intergration:
 ```bash
 # as root
 apt-get install python3-certbot-nginx
-certbot --nginx -d YOURDOMAIN
+certbot --nginx -d YOURDOMAIN   # for NGINX
+certbot --apache -d YOURDOMAIN  # for Apache2
 ```
 
 And follow the questions. Thats it.
