@@ -20,3 +20,4 @@ __pycache__/
 /log
 /db.sqlite3
 /sentence_tokenizer.pickle
+/nltk_data

@@ -56,13 +56,14 @@ class ChatbotViewSet(GenericViewSet):
         responses = Statement.objects.filter(parent=parent)
         response, similarity = logic_adapter.process(request, responses)
 
-        if not response:
+        if similarity < settings.LOGIC_THRESHOLD:
+            logger.warning('no response found for request="%s" in response to parent="%s", best guess was request="%s" (similarity=%0.3f)', request, parent.response if parent else None, response.request, similarity)
             response = {
                 'id': in_response_to,
                 'request': None,
                 'response': settings.RESPONSES.get('unknown'),
             }
-            logger.warning('no response found for request="%s" in response to parent="%s"', request, parent.response if parent else None)
+
         else:
             logger.info('request="%s" matched "%s" (similarity=%0.3f)', request, response.request, similarity)
             logger.debug('response="%s"', response.response)
