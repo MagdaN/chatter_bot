@@ -32,7 +32,7 @@ class App extends Component {
 
   calculateLoadingTime(text) {
     if (this.state.loading) {
-      const textLenght = text.length
+      const textLenght = text.length < 150 ? text.length : 150
       return textLenght * loadingTimeFactor
     } else {
       return 0
