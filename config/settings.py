@@ -1,3 +1,6 @@
+import csv
+import io
+import logging
 import os
 
 import dj_database_url
@@ -150,6 +153,9 @@ if LOG_DIR:
             'name': {
                 'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
             },
+            'csv': {
+                '()': 'chat.logging.CsvFormatter'
+            },
             'console': {
                 'format': '[%(asctime)s] %(message)s'
             }
@@ -171,6 +177,12 @@ if LOG_DIR:
                 'class': 'logging.FileHandler',
                 'filename': os.path.join(LOG_DIR, 'chat.log'),
                 'formatter': 'name'
+            },
+            'chat_csv_log': {
+                'level': 'WARNING',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(LOG_DIR, 'chat.csv'),
+                'formatter': 'csv'
             }
         },
         'loggers': {
@@ -180,7 +192,7 @@ if LOG_DIR:
                 'propagate': True
             },
             'chat': {
-                'handlers': ['chat_log'],
+                'handlers': ['chat_log', 'chat_csv_log'],
                 'level': LOG_LEVEL,
                 'propagate': False
             }
