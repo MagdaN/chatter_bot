@@ -1,5 +1,6 @@
 import React, { Component} from "react"
-import Cookies from 'js-cookie';
+import Cookies from 'js-cookie'
+import marked from 'marked'
 
 
 const apiUrl = '/api/v1/chatbot/'
@@ -14,7 +15,8 @@ class App extends Component {
       value: '',
       loading: false
     }
-    this.textarea = React.createRef();
+
+    this.textarea = React.createRef()
     this.handleTextChange = this.handleTextChange.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -134,7 +136,7 @@ class App extends Component {
               } else {
                 return (
                   <div key={i}>
-                    <div className={'chat__statement--chatbot'}>{statement.response}</div>
+                    <div className={'chat__statement--chatbot'} dangerouslySetInnerHTML={{__html: marked(statement.response || '')}}></div>
                     {statement.conclusion && <div className={'chat__statement--chatbot'}>{statement.conclusion}</div>}
                   </div>
                 )
