@@ -47,7 +47,7 @@ class NaturalLanguageProcessor():
         request_tokens = list(statements.values_list('request', flat=True))
         request_tokens.append(request)
 
-        TfidfVec = TfidfVectorizer(tokenizer=self.normalize_lem, stop_words='english')
+        TfidfVec = TfidfVectorizer(tokenizer=self.normalize_lem)
         tfidf = TfidfVec.fit_transform(request_tokens)
         vals = cosine_similarity(tfidf[-1], tfidf)
         idx = vals.argsort()[0][-2]
