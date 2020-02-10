@@ -55,7 +55,9 @@ class App extends Component {
       method: 'GET',
       headers
     }
-    if (conversation.length) {
+    if (last_statement) {
+      console.info(last_statement);
+
       params = {
         method: 'POST',
         body: JSON.stringify(last_statement),
@@ -67,6 +69,8 @@ class App extends Component {
       .then(response => response.json())
       .then(statement => {
         const { conversation } = this.state
+
+        console.info(statement);
 
         conversation.push(statement)
 
