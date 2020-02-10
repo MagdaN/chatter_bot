@@ -39,8 +39,8 @@ Create `/srv/chatbot/chatbot/.env` with the folowing content:
 
 ```bash
 SECRET_KEY=<a long random secret key>
-DATABASE=postgresql://@/chatbot                      # for PostgreSQL, using peer auth
-DATABASE=mysql://chatbot:<password>@localhost/chatbot  # for MySQL
+DATABASE=postgresql://@/<dbname>                      # for PostgreSQL, using peer auth
+DATABASE=mysql://<username>:<password>@localhost/<dbname>  # for MySQL
 ALLOWED_HOSTS=<your hostname>
 ```
 
@@ -48,13 +48,13 @@ Create the database user and the database:
 
 ```sql
 # for PostgreSQL
-CREATE ROLE chatbot;
-CREATE DATABASE chatbot OWNER chatbot;
+CREATE ROLE <username>;
+CREATE DATABASE <dbname> OWNER <username>;
 
 # for MySQL
-CREATE USER 'chatbot'@'localhost' identified by '<password>';
-CREATE DATABASE `chatbot` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-GRANT ALL PRIVILEGES ON `chatbot`.* to 'chatbot'@'localhost';
+CREATE USER '<username>'@'localhost' identified by '<password>';
+CREATE DATABASE `<dbname>` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON `<dbname>`.* to '<username>'@'localhost';
 ```
 
 Run the database migrations and create a superuser:

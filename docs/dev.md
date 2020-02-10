@@ -44,13 +44,17 @@ All further steps need to be performed using the windows shell `cmd.exe`. You ca
 Application setup
 -----------------
 
-First, create a database with the `pg_trgm` extension in PostgreSQL using, e.g.:
+Create the database user and the database:
 
 ```sql
-CREATE ROLE chatbot WITH PASSWORD 'chatbot';
-CREATE DATABASE chatbot OWNER chatbot;
-\c chatbot
-CREATE EXTENSION pg_trgm;
+# for PostgreSQL
+CREATE ROLE <username>;
+CREATE DATABASE <dbname> OWNER <username>;
+
+# for MySQL
+CREATE USER '<username>'@'localhost' identified by '<password>';
+CREATE DATABASE `<dbname>` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON `<dbname>`.* to '<username>'@'localhost';
 ```
 
 Create a virtual environment and install the Python dependencies:
