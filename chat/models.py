@@ -43,26 +43,26 @@ class Conversation(TimeStampedModel):
         Statement.objects.filter(conversation=self).delete()
 
         with self.file.open() as f:
-            statements = yaml.safe_load(f.read())
-            self.train_statement(statements)
+            statement = yaml.safe_load(f.read())
+            self.train_statement(statement)
 
-    def train_statement(self, training_statements, parent=None):
-        for training_statement in training_statements:
-            try:
-                statement = Statement(
-                    parent=parent,
-                    conversation=self,
-                    message=training_statement['message'],
-                    reply=training_statement['reply'],
-                    conclusion=training_statement.get('conclusion', ''),
-                    forward=training_statement.get('forward', '')
-                )
-                statement.save()
+    def train_statement(self, training_statement, parent=None):
+        try:
+            statement = Statement(
+                parent=parent,
+                conversation=self,
+                message=training_statement['message'],
+                reply=training_statement['reply'],
+                conclusion=training_statement.get('conclusion', ''),
+                forward=training_statement.get('forward', '')
+            )
+            statement.save()
 
-                if 'children' in training_statement:
-                    self.train_statement(training_statement['children'], parent=statement)
-            except KeyError:
-                pass
+            if 'children' in training_statement:
+                for child_statement in training_statement['children']:
+                    self.train_statement(child_statement, parent=statement)
+        except KeyError:
+            pass
 
 
 @receiver(post_save, sender=Conversation)
