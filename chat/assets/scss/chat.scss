@@ -3,6 +3,10 @@
 	margin: 1rem;
 	border: 1px solid $gray-400;
 	border-radius: 0.25rem;
+
+	p:last-child {
+		margin-bottom: 0;
+	}
 }
 
 .chat__statement--user {

@@ -15,9 +15,10 @@ train.short_description = _('Train selected Conversation again')
 @admin.register(Conversation)
 class ConversationAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'created', 'modified')
+    readonly_fields = ('name', )
     actions = [train]
 
 
 @admin.register(Statement)
 class StatementAdmin(admin.ModelAdmin):
-    list_display = ('request', 'response', 'conversation',  'is_root')
+    list_display = ('message', 'reply', 'conversation',  'is_root')

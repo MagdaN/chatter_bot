@@ -1,10 +1,6 @@
-import csv
-import io
-import logging
 import os
 
 import dj_database_url
-from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -121,7 +117,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 
-RESPONSES = {
+REPLIES = {
     'initial': 'How can I help you?',
     'unknown': 'Sorry, I don\'t know what that means.',
     'conclusion': 'This is all I can tell you about this topic. Do you have more questions?'

@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework import serializers
 
 from .models import Statement
@@ -6,22 +5,20 @@ from .models import Statement
 
 class StatementSerializer(serializers.ModelSerializer):
 
-    conclusion = serializers.SerializerMethodField(default=None)
+    conclusion = serializers.CharField(default=None)
+    forward_to = serializers.IntegerField(default=None)
+    forward_reply = serializers.CharField(default=None)
 
     class Meta:
         model = Statement
         fields = (
             'id',
-            'request',
-            'response',
-            'conclusion'
+            'message',
+            'reply',
+            'conclusion',
+            'forward_to',
+            'forward_reply'
         )
-
-    def get_conclusion(self, obj):
-        if isinstance(obj, Statement) and not obj.children.exists():
-            return obj.conclusion or settings.RESPONSES.get('conclusion')
-        else:
-            return None
 
 
 class StatementCreateSerializer(serializers.ModelSerializer):
@@ -31,6 +28,6 @@ class StatementCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statement
         fields = (
-            'request',
+            'message',
             'in_response_to'
         )
