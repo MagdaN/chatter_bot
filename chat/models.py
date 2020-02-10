@@ -16,6 +16,7 @@ def training_path(instance, file_name):
 
 class Conversation(TimeStampedModel):
 
+    name = models.CharField(max_length=64, blank=True)
     file = models.FileField(upload_to=training_path)
 
     class Meta:
@@ -24,9 +25,13 @@ class Conversation(TimeStampedModel):
         verbose_name_plural = _('Conversation')
 
     def __str__(self):
+        return self.name
+
+    def save(self):
         basename = os.path.basename(self.file.name)
         root, ext = os.path.splitext(basename)
-        return root
+        self.name = root.split('_')[0]
+        super().save()
 
     def clean(self):
         try:
