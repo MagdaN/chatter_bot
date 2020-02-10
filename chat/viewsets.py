@@ -78,7 +78,7 @@ class ChatbotViewSet(GenericViewSet):
 
             if response.forward:
                 try:
-                    forward_statement = Statement.objects.get(message=response.forward)
+                    forward_statement = Statement.objects.filter(conversation__name=response.forward, parent=None).first()
                     response.forward_to = forward_statement.pk
                     response.forward_reply = forward_statement.reply
                 except Statement.DoesNotExist:
