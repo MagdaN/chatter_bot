@@ -7,6 +7,8 @@ from .models import Statement
 class StatementSerializer(serializers.ModelSerializer):
 
     conclusion = serializers.SerializerMethodField(default=None)
+    redirect_to = serializers.IntegerField(default=None)
+    redirect_response = serializers.CharField(default=None)
 
     class Meta:
         model = Statement
@@ -14,12 +16,17 @@ class StatementSerializer(serializers.ModelSerializer):
             'id',
             'request',
             'response',
-            'conclusion'
+            'conclusion',
+            'redirect_to',
+            'redirect_response'
         )
 
     def get_conclusion(self, obj):
-        if isinstance(obj, Statement) and not obj.children.exists():
-            return obj.conclusion or settings.RESPONSES.get('conclusion')
+        if isinstance(obj, Statement):
+            if not obj.conclusion and not obj.children.exists():
+                return settings.RESPONSES.get('conclusion')
+            else:
+                return obj.conclusion
         else:
             return None
 

@@ -1,7 +1,6 @@
 import os
 
 import yaml
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_delete, post_save
@@ -47,9 +46,10 @@ class Conversation(TimeStampedModel):
             statement = Statement(
                 parent=parent,
                 conversation=self,
-                request=training_statement['request'],
-                response=training_statement['response'],
-                conclusion=training_statement.get('conclusion', '')
+                request=training_statement.get('request'),
+                response=training_statement.get('response'),
+                conclusion=training_statement.get('conclusion', ''),
+                redirect=training_statement.get('redirect', '')
             )
             statement.save()
 
@@ -74,7 +74,8 @@ class Statement(MPTTModel):
 
     request = models.TextField()
     response = models.TextField()
-    conclusion = models.TextField(default='', blank=None)
+    conclusion = models.TextField(default='', blank=True)
+    redirect = models.TextField(default='', blank=True)
 
     def __str__(self):
         return self.request

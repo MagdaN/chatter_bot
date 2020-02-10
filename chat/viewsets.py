@@ -73,6 +73,14 @@ class ChatbotViewSet(GenericViewSet):
             logger.info('request="%s" matched "%s" (similarity=%0.3f)', request_text, response_text, similarity)
             logger.debug('response="%s"', response_text)
 
+            if response.redirect:
+                try:
+                    redirect_statement = Statement.objects.get(request=response.redirect)
+                    response.redirect_to = redirect_statement.pk
+                    response.redirect_response = redirect_statement.response
+                except Statement.DoesNotExist:
+                    pass
+
         # return the first statement
         serializer = StatementSerializer(response)
         return Response(serializer.data)

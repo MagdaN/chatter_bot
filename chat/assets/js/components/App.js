@@ -110,7 +110,10 @@ class App extends Component {
     }
 
     let in_response_to = last_statement.id
-    if (last_statement.conclusion) {
+    if (last_statement.redirect_to) {
+      // redirect to a new thread
+      in_response_to = last_statement.redirect_to
+    } else if (last_statement.conclusion) {
       // lets start a new thread
       in_response_to = null
     }
@@ -142,8 +145,14 @@ class App extends Component {
                   <div key={i}>
                     <div className={'chat__statement--chatbot'}
                          dangerouslySetInnerHTML={{__html: marked(statement.response || '')}}></div>
-                    {statement.conclusion && <div className={'chat__statement--chatbot'}
-                                                  dangerouslySetInnerHTML={{__html: marked(statement.conclusion || '')}}></div>}
+                    {statement.conclusion &&
+                    <div className={'chat__statement--chatbot'}
+                         dangerouslySetInnerHTML={{__html: marked(statement.conclusion || '')}}></div>
+                    }
+                    {statement.redirect_response &&
+                    <div className={'chat__statement--chatbot'}
+                         dangerouslySetInnerHTML={{__html: marked(statement.redirect_response || '')}}></div>
+                    }
                   </div>
                 )
               }
