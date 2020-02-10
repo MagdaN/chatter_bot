@@ -44,6 +44,9 @@ class NaturalLanguageProcessor():
         from sklearn.feature_extraction.text import TfidfVectorizer
         from sklearn.metrics.pairwise import cosine_similarity
 
+        if not statements.exists():
+            return None, 0.0
+
         request_tokens = list(statements.values_list('request', flat=True))
         request_tokens.append(request)
 
