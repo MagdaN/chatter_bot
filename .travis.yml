@@ -10,6 +10,10 @@ python:
 addons:
   postgresql: '10'
 
+env:
+  - SECRET_KEY=not very secret
+  - DATABASE=postgresql:///chatbot
+
 before_install:
 - sudo apt-get -qq update
 
