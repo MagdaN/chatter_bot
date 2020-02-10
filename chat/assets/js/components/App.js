@@ -136,8 +136,10 @@ class App extends Component {
               } else {
                 return (
                   <div key={i}>
-                    <div className={'chat__statement--chatbot'} dangerouslySetInnerHTML={{__html: marked(statement.response || '')}}></div>
-                    {statement.conclusion && <div className={'chat__statement--chatbot'}>{statement.conclusion}</div>}
+                    <div className={'chat__statement--chatbot'}
+                         dangerouslySetInnerHTML={{__html: marked(statement.response || '')}}></div>
+                    {statement.conclusion && <div className={'chat__statement--chatbot'}
+                                                  dangerouslySetInnerHTML={{__html: marked(statement.conclusion || '')}}></div>}
                   </div>
                 )
               }

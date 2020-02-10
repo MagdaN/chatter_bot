@@ -48,7 +48,9 @@ class Conversation(TimeStampedModel):
                 parent=parent,
                 conversation=self,
                 request=training_statement['request'],
-                response=training_statement['response'])
+                response=training_statement['response'],
+                conclusion=training_statement.get('conclusion', '')
+            )
             statement.save()
 
             if 'children' in training_statement:
@@ -72,6 +74,7 @@ class Statement(MPTTModel):
 
     request = models.TextField()
     response = models.TextField()
+    conclusion = models.TextField(default='', blank=None)
 
     def __str__(self):
         return self.request
@@ -84,8 +87,3 @@ class Statement(MPTTModel):
     @property
     def is_root(self):
         return self.parent is None
-
-    @property
-    def conclusion(self):
-        if not self.children.exists():
-            return settings.RESPONSES.get('conclusion')
