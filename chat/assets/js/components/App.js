@@ -80,7 +80,7 @@ class App extends Component {
             value: '',
             loading: false
           })
-        }.bind(this), this.calculateLoadingTime(statement.response))
+        }.bind(this), this.calculateLoadingTime(statement.reply))
 
 
       }, error => {
@@ -110,9 +110,9 @@ class App extends Component {
     }
 
     let in_response_to = last_statement.id
-    if (last_statement.redirect_to) {
-      // redirect to a new thread
-      in_response_to = last_statement.redirect_to
+    if (last_statement.forward_to) {
+      // forward to a new thread
+      in_response_to = last_statement.forward_to
     } else if (last_statement.conclusion) {
       // lets start a new thread
       in_response_to = null
@@ -120,7 +120,7 @@ class App extends Component {
 
     conversation.push({
       persona: 'user',
-      request: value,
+      message: value,
       in_response_to: in_response_to
     })
     this.setState({ conversation, loading: true }, this.fetchResponse)
@@ -137,21 +137,21 @@ class App extends Component {
               if (statement.persona == 'user') {
                 return (
                   <div key={i}>
-                    <div className={'chat__statement--user'}>{statement.request}</div>
+                    <div className={'chat__statement--user'}>{statement.message}</div>
                   </div>
                 )
               } else {
                 return (
                   <div key={i}>
                     <div className={'chat__statement--chatbot'}
-                         dangerouslySetInnerHTML={{__html: marked(statement.response || '')}}></div>
+                         dangerouslySetInnerHTML={{__html: marked(statement.reply || '')}}></div>
                     {statement.conclusion &&
                     <div className={'chat__statement--chatbot'}
                          dangerouslySetInnerHTML={{__html: marked(statement.conclusion || '')}}></div>
                     }
-                    {statement.redirect_response &&
+                    {statement.forward_reply &&
                     <div className={'chat__statement--chatbot'}
-                         dangerouslySetInnerHTML={{__html: marked(statement.redirect_response || '')}}></div>
+                         dangerouslySetInnerHTML={{__html: marked(statement.forward_reply || '')}}></div>
                     }
                   </div>
                 )

@@ -26,8 +26,8 @@ class ChatbotViewSet(GenericViewSet):
     def list(self, request, *args, **kwargs):
         statement = {
             'id': None,
-            'request': None,
-            'response': settings.RESPONSES.get('initial'),
+            'message': None,
+            'reply': settings.REPLIES.get('initial'),
         }
 
         serializer = StatementSerializer(statement)
@@ -37,17 +37,17 @@ class ChatbotViewSet(GenericViewSet):
         serializer = StatementCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        request_text = serializer.data.get('request')
+        message = serializer.data.get('message')
         in_response_to = serializer.data.get('in_response_to')
         if in_response_to is not None:
             parent = Statement.objects.get(pk=in_response_to)
-            parent_response_text = parent.response
+            parent_reply = parent.reply
         else:
             parent = None
-            parent_response_text = None
+            parent_reply = None
 
-        logger.debug('request="%s"', request_text)
-        logger.debug('parent="%s" (pk=%s)', parent_response_text, in_response_to)
+        logger.debug('message="%s"', message)
+        logger.debug('parent="%s" (pk=%s)', parent_reply, in_response_to)
 
         logic_adapter_class = self.get_logic_adapter_class()
         logic_adapter = logic_adapter_class()
@@ -56,28 +56,31 @@ class ChatbotViewSet(GenericViewSet):
 
         # filter a statement that respond to the last statement
         statements = Statement.objects.filter(parent=parent)
-        response, similarity = logic_adapter.process(request_text, statements)
-        response_text = response.request if response else None
+        response, similarity = logic_adapter.process(message, statements)
+        response_message = response.message if response else None
 
         if similarity < settings.LOGIC_THRESHOLD:
-            logger.warning('no response found for request="%s" in response to parent="%s", best guess was request="%s" (similarity=%0.3f)',
-                           request_text, parent_response_text, response_text, similarity)
+            logger.warning('no response found for message="%s" in response to parent="%s", best guess was message="%s" (similarity=%0.3f)',
+                           message, parent_reply, response_message, similarity)
 
             response = {
                 'id': in_response_to,
-                'request': None,
-                'response': settings.RESPONSES.get('unknown'),
+                'message': None,
+                'reply': settings.REPLIES.get('unknown'),
             }
 
         else:
-            logger.info('request="%s" matched "%s" (similarity=%0.3f)', request_text, response_text, similarity)
-            logger.debug('response="%s"', response_text)
+            logger.info('message="%s" matched "%s" (similarity=%0.3f)', message, response_message, similarity)
+            logger.debug('reply="%s"', response.reply)
 
-            if response.redirect:
+            if not response.children.exists() and not response.conclusion:
+                response.conclusion = settings.REPLIES.get('conclusion')
+
+            if response.forward:
                 try:
-                    redirect_statement = Statement.objects.get(request=response.redirect)
-                    response.redirect_to = redirect_statement.pk
-                    response.redirect_response = redirect_statement.response
+                    forward_statement = Statement.objects.get(message=response.forward)
+                    response.forward_to = forward_statement.pk
+                    response.forward_reply = forward_statement.reply
                 except Statement.DoesNotExist:
                     pass
 

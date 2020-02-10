@@ -20,4 +20,4 @@ class ConversationAdmin(admin.ModelAdmin):
 
 @admin.register(Statement)
 class StatementAdmin(admin.ModelAdmin):
-    list_display = ('request', 'response', 'conversation',  'is_root')
+    list_display = ('message', 'reply', 'conversation',  'is_root')

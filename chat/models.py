@@ -43,18 +43,21 @@ class Conversation(TimeStampedModel):
 
     def train_statement(self, training_statements, parent=None):
         for training_statement in training_statements:
-            statement = Statement(
-                parent=parent,
-                conversation=self,
-                request=training_statement.get('request'),
-                response=training_statement.get('response'),
-                conclusion=training_statement.get('conclusion', ''),
-                redirect=training_statement.get('redirect', '')
-            )
-            statement.save()
+            try:
+                statement = Statement(
+                    parent=parent,
+                    conversation=self,
+                    message=training_statement['message'],
+                    reply=training_statement['reply'],
+                    conclusion=training_statement.get('conclusion', ''),
+                    forward=training_statement.get('forward', '')
+                )
+                statement.save()
 
-            if 'children' in training_statement:
-                self.train_statement(training_statement['children'], parent=statement)
+                if 'children' in training_statement:
+                    self.train_statement(training_statement['children'], parent=statement)
+            except KeyError:
+                pass
 
 
 @receiver(post_save, sender=Conversation)
@@ -72,13 +75,13 @@ class Statement(MPTTModel):
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='statements')
 
-    request = models.TextField()
-    response = models.TextField()
+    message = models.TextField()
+    reply = models.TextField()
     conclusion = models.TextField(default='', blank=True)
-    redirect = models.TextField(default='', blank=True)
+    forward = models.TextField(default='', blank=True)
 
     def __str__(self):
-        return self.request
+        return self.message
 
     class Meta:
         ordering = ('conversation', )
