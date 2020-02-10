@@ -120,7 +120,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root/')
 REPLIES = {
     'initial': 'How can I help you?',
     'unknown': 'Sorry, I don\'t know what that means.',
-    'conclusion': 'This is all I can tell you about this topic. Do you have more questions?'
+    'conclusion': '''This is all I can tell you about this topic.
+    Do you have more questions? If yes, how can I help you?'''
 }
 
 LOGIC_ADAPTER = os.getenv('LOGIC_ADAPTER', 'chat.logic.NaturalLanguageProcessor')
