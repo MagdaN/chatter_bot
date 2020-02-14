@@ -1,0 +1,7 @@
+message: "beta"
+reply: "This is conversation beta!"
+children:
+  - message: "gamma"
+    reply: "This is gamma in conversation beta!"
+  - message: "delta"
+    reply: "This is delta in conversation beta!"

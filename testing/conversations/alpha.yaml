@@ -1,0 +1,8 @@
+message: "alpha"
+reply: "This is conversation alpha!"
+children:
+  - message: "gamma"
+    reply: "This is gamma in conversation alpha!"
+  - message: "delta"
+    reply: "This is delta in conversation alpha!"
+    conclusion: "And this is a conclusion."
