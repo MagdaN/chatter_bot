@@ -1,1 +1,176 @@
-[{"model": "chat.conversation", "pk": 1, "fields": {"created": "2020-02-14T15:30:56.885Z", "modified": "2020-02-14T15:30:56.885Z", "name": "alpha", "file": "training/alpha_OCTNW8f.yaml"}}, {"model": "chat.conversation", "pk": 2, "fields": {"created": "2020-02-14T15:31:01.902Z", "modified": "2020-02-14T15:31:01.902Z", "name": "beta", "file": "training/beta_olSPYlY.yaml"}}, {"model": "chat.statement", "pk": 1, "fields": {"parent": null, "conversation": 1, "message": "alpha", "reply": "This is conversation alpha!", "conclusion": "", "forward": "", "lft": 1, "rght": 6, "tree_id": 1, "level": 0}}, {"model": "chat.statement", "pk": 2, "fields": {"parent": 1, "conversation": 1, "message": "gamma", "reply": "This is gamma in conversation alpha!", "conclusion": "", "forward": "", "lft": 2, "rght": 3, "tree_id": 1, "level": 1}}, {"model": "chat.statement", "pk": 3, "fields": {"parent": 1, "conversation": 1, "message": "delta", "reply": "This is delta in conversation alpha!", "conclusion": "And this is a conclusion.", "forward": "", "lft": 4, "rght": 5, "tree_id": 1, "level": 1}}, {"model": "chat.statement", "pk": 4, "fields": {"parent": null, "conversation": 2, "message": "beta", "reply": "This is conversation beta!", "conclusion": "", "forward": "", "lft": 1, "rght": 6, "tree_id": 2, "level": 0}}, {"model": "chat.statement", "pk": 5, "fields": {"parent": 4, "conversation": 2, "message": "gamma", "reply": "This is gamma in conversation beta!", "conclusion": "", "forward": "", "lft": 2, "rght": 3, "tree_id": 2, "level": 1}}, {"model": "chat.statement", "pk": 6, "fields": {"parent": 4, "conversation": 2, "message": "delta", "reply": "This is delta in conversation beta!", "conclusion": "", "forward": "", "lft": 4, "rght": 5, "tree_id": 2, "level": 1}}]
+[
+  {
+    "model": "chat.conversation",
+    "pk": 1,
+    "fields": {
+      "created": "2020-02-14T15:41:31.976Z",
+      "modified": "2020-02-14T15:41:31.976Z",
+      "name": "alpha",
+      "file": "training/testing/conversations/alpha_QVoYrSG.yaml"
+    }
+  },
+  {
+    "model": "chat.conversation",
+    "pk": 2,
+    "fields": {
+      "created": "2020-02-14T15:41:35.345Z",
+      "modified": "2020-02-14T15:41:35.345Z",
+      "name": "beta",
+      "file": "training/testing/conversations/beta.yaml"
+    }
+  },
+  {
+    "model": "chat.conversation",
+    "pk": 3,
+    "fields": {
+      "created": "2020-02-14T15:41:38.323Z",
+      "modified": "2020-02-14T15:41:38.324Z",
+      "name": "gamma",
+      "file": "training/testing/conversations/gamma.yaml"
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 1,
+    "fields": {
+      "parent": null,
+      "conversation": 1,
+      "message": "alpha",
+      "reply": "This is conversation alpha!",
+      "conclusion": "",
+      "forward": "",
+      "lft": 1,
+      "rght": 6,
+      "tree_id": 1,
+      "level": 0
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 2,
+    "fields": {
+      "parent": 1,
+      "conversation": 1,
+      "message": "one",
+      "reply": "This is one in conversation alpha!",
+      "conclusion": "",
+      "forward": "",
+      "lft": 2,
+      "rght": 3,
+      "tree_id": 1,
+      "level": 1
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 3,
+    "fields": {
+      "parent": 1,
+      "conversation": 1,
+      "message": "two",
+      "reply": "This is two in conversation alpha!",
+      "conclusion": "And this is a conclusion.",
+      "forward": "",
+      "lft": 4,
+      "rght": 5,
+      "tree_id": 1,
+      "level": 1
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 4,
+    "fields": {
+      "parent": null,
+      "conversation": 2,
+      "message": "beta",
+      "reply": "This is conversation beta!",
+      "conclusion": "",
+      "forward": "",
+      "lft": 1,
+      "rght": 6,
+      "tree_id": 2,
+      "level": 0
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 5,
+    "fields": {
+      "parent": 4,
+      "conversation": 2,
+      "message": "one",
+      "reply": "This is one in conversation beta!",
+      "conclusion": "",
+      "forward": "",
+      "lft": 2,
+      "rght": 3,
+      "tree_id": 2,
+      "level": 1
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 6,
+    "fields": {
+      "parent": 4,
+      "conversation": 2,
+      "message": "two",
+      "reply": "This is two in conversation beta!",
+      "conclusion": "",
+      "forward": "",
+      "lft": 4,
+      "rght": 5,
+      "tree_id": 2,
+      "level": 1
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 7,
+    "fields": {
+      "parent": null,
+      "conversation": 3,
+      "message": "gamma",
+      "reply": "This is conversation gamma!",
+      "conclusion": "",
+      "forward": "",
+      "lft": 1,
+      "rght": 6,
+      "tree_id": 3,
+      "level": 0
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 8,
+    "fields": {
+      "parent": 7,
+      "conversation": 3,
+      "message": "stop",
+      "reply": "This is stop in conversation alpha!",
+      "conclusion": "Stop!",
+      "forward": "",
+      "lft": 2,
+      "rght": 3,
+      "tree_id": 3,
+      "level": 1
+    }
+  },
+  {
+    "model": "chat.statement",
+    "pk": 9,
+    "fields": {
+      "parent": 7,
+      "conversation": 3,
+      "message": "forward",
+      "reply": "This is forward in conversation alpha!",
+      "conclusion": "Forward!",
+      "forward": "",
+      "lft": 4,
+      "rght": 5,
+      "tree_id": 3,
+      "level": 1
+    }
+  }
+]
