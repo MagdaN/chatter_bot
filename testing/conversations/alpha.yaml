@@ -1,5 +1,6 @@
 message: "alpha"
 reply: "This is conversation alpha!"
+reference: "foo"
 children:
   - message: "one"
     reply: "This is one in conversation alpha!"

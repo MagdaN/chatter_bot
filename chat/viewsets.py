@@ -73,14 +73,16 @@ class ChatbotViewSet(GenericViewSet):
             logger.info('message="%s" matched "%s" (similarity=%0.3f)', message, response_message, similarity)
             logger.debug('reply="%s"', response.reply)
 
-            if not response.children.exists() and not response.conclusion:
+            if not response.children.exists() and not response.conclusion and not response.forward:
                 response.conclusion = settings.REPLIES.get('conclusion')
 
             if response.forward:
                 try:
-                    forward_statement = Statement.objects.filter(conversation__name=response.forward, parent=None).first()
-                    response.forward_to = forward_statement.pk
-                    response.forward_reply = forward_statement.reply
+                    response.forward = Statement.objects.get(reference=response.forward)
+
+                    if not response.forward.children.exists() and not response.forward.conclusion and not response.forward.forward:
+                        response.forward.conclusion = settings.REPLIES.get('conclusion')
+
                 except Statement.DoesNotExist:
                     pass
 

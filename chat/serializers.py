@@ -3,11 +3,21 @@ from rest_framework import serializers
 from .models import Statement
 
 
+class ForwardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Statement
+        fields = (
+            'id',
+            'reply',
+            'conclusion'
+        )
+
+
 class StatementSerializer(serializers.ModelSerializer):
 
     conclusion = serializers.CharField(default=None)
-    forward_to = serializers.IntegerField(default=None)
-    forward_reply = serializers.CharField(default=None)
+    forward = ForwardSerializer(default={})
 
     class Meta:
         model = Statement
@@ -16,8 +26,7 @@ class StatementSerializer(serializers.ModelSerializer):
             'message',
             'reply',
             'conclusion',
-            'forward_to',
-            'forward_reply'
+            'forward'
         )
 
 
