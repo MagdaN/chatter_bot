@@ -67,7 +67,8 @@ class Conversation(TimeStampedModel):
 
 @receiver(post_save, sender=Conversation)
 def handle_conversation_save(sender, instance, created, **kwargs):
-    instance.train()
+    if not kwargs.get('raw'):
+        instance.train()
 
 
 @receiver(post_delete, sender=Conversation)

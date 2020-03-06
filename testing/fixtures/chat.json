@@ -3,30 +3,30 @@
     "model": "chat.conversation",
     "pk": 1,
     "fields": {
-      "created": "2020-02-14T15:41:31.976Z",
-      "modified": "2020-02-14T15:41:31.976Z",
+      "created": "2020-03-06T11:04:50.830Z",
+      "modified": "2020-03-06T11:04:50.830Z",
       "name": "alpha",
-      "file": "training/testing/conversations/alpha_QVoYrSG.yaml"
+      "file": "training/alpha.yaml"
     }
   },
   {
     "model": "chat.conversation",
     "pk": 2,
     "fields": {
-      "created": "2020-02-14T15:41:35.345Z",
-      "modified": "2020-02-14T15:41:35.345Z",
+      "created": "2020-03-06T11:04:54.438Z",
+      "modified": "2020-03-06T11:04:54.438Z",
       "name": "beta",
-      "file": "training/testing/conversations/beta.yaml"
+      "file": "training/beta.yaml"
     }
   },
   {
     "model": "chat.conversation",
     "pk": 3,
     "fields": {
-      "created": "2020-02-14T15:41:38.323Z",
-      "modified": "2020-02-14T15:41:38.324Z",
+      "created": "2020-03-06T11:04:57.303Z",
+      "modified": "2020-03-06T11:04:57.303Z",
       "name": "gamma",
-      "file": "training/testing/conversations/gamma.yaml"
+      "file": "training/gamma.yaml"
     }
   },
   {
@@ -39,6 +39,7 @@
       "reply": "This is conversation alpha!",
       "conclusion": "",
       "forward": "",
+      "reference": "foo",
       "lft": 1,
       "rght": 6,
       "tree_id": 1,
@@ -55,6 +56,7 @@
       "reply": "This is one in conversation alpha!",
       "conclusion": "",
       "forward": "",
+      "reference": "",
       "lft": 2,
       "rght": 3,
       "tree_id": 1,
@@ -71,6 +73,7 @@
       "reply": "This is two in conversation alpha!",
       "conclusion": "And this is a conclusion.",
       "forward": "",
+      "reference": "",
       "lft": 4,
       "rght": 5,
       "tree_id": 1,
@@ -87,6 +90,7 @@
       "reply": "This is conversation beta!",
       "conclusion": "",
       "forward": "",
+      "reference": "",
       "lft": 1,
       "rght": 6,
       "tree_id": 2,
@@ -103,6 +107,7 @@
       "reply": "This is one in conversation beta!",
       "conclusion": "",
       "forward": "",
+      "reference": "",
       "lft": 2,
       "rght": 3,
       "tree_id": 2,
@@ -119,6 +124,7 @@
       "reply": "This is two in conversation beta!",
       "conclusion": "",
       "forward": "",
+      "reference": "",
       "lft": 4,
       "rght": 5,
       "tree_id": 2,
@@ -132,9 +138,10 @@
       "parent": null,
       "conversation": 3,
       "message": "gamma",
-      "reply": "This is conversation gamma!",
+      "reply": "This is conversation gamma! Should I forward you to alpha?",
       "conclusion": "",
       "forward": "",
+      "reference": "",
       "lft": 1,
       "rght": 6,
       "tree_id": 3,
@@ -147,10 +154,11 @@
     "fields": {
       "parent": 7,
       "conversation": 3,
-      "message": "stop",
-      "reply": "This is stop in conversation alpha!",
-      "conclusion": "Stop!",
-      "forward": "",
+      "message": "yes",
+      "reply": "",
+      "conclusion": "",
+      "forward": "foo",
+      "reference": "",
       "lft": 2,
       "rght": 3,
       "tree_id": 3,
@@ -163,10 +171,11 @@
     "fields": {
       "parent": 7,
       "conversation": 3,
-      "message": "forward",
-      "reply": "This is forward in conversation alpha!",
-      "conclusion": "Forward!",
+      "message": "no",
+      "reply": "",
+      "conclusion": "ok, then.",
       "forward": "",
+      "reference": "",
       "lft": 4,
       "rght": 5,
       "tree_id": 3,
