@@ -110,11 +110,11 @@ class App extends Component {
     }
 
     let in_response_to = last_statement.id
-    if (last_statement.forward_to) {
-      // forward to a new thread
-      in_response_to = last_statement.forward_to
+    if (last_statement.forward.conclusion) {
+      in_response_to = null
+    } else if (last_statement.forward.id) {
+      in_response_to = last_statement.forward.id
     } else if (last_statement.conclusion) {
-      // lets start a new thread
       in_response_to = null
     }
 
@@ -143,15 +143,21 @@ class App extends Component {
               } else {
                 return (
                   <div key={i}>
+                    {statement.reply &&
                     <div className={'chat__statement--chatbot'}
                          dangerouslySetInnerHTML={{__html: marked(statement.reply || '')}}></div>
+                    }
                     {statement.conclusion &&
                     <div className={'chat__statement--chatbot'}
                          dangerouslySetInnerHTML={{__html: marked(statement.conclusion || '')}}></div>
                     }
-                    {statement.forward_reply &&
+                    {statement.forward && statement.forward.reply &&
                     <div className={'chat__statement--chatbot'}
-                         dangerouslySetInnerHTML={{__html: marked(statement.forward_reply || '')}}></div>
+                         dangerouslySetInnerHTML={{__html: marked(statement.forward.reply || '')}}></div>
+                    }
+                    {statement.forward && statement.forward.conclusion &&
+                    <div className={'chat__statement--chatbot'}
+                         dangerouslySetInnerHTML={{__html: marked(statement.forward.conclusion || '')}}></div>
                     }
                   </div>
                 )

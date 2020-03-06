@@ -1,0 +1,7 @@
+message: "gamma"
+reply: "This is conversation gamma! Should I forward you to alpha?"
+children:
+  - message: "yes"
+    forward: "foo"
+  - message: "no"
+    conclusion: "ok, then."
