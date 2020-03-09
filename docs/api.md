@@ -56,7 +56,7 @@ e.g. the API's response looks like that:
     "id":90,
     "message":"my question",
     "reply":"This is one in conversation alpha!",
-    "conclusion":"This is all I can tell you about this topic. Do you have more questions? If yes, how can I help      you?",
+    "conclusion":"This is all I can tell you. Do you have more questions? If yes, how can I help you?",
     "forward":{}
 }
 ```
