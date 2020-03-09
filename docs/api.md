@@ -3,13 +3,14 @@ How to interact with the API
 
 The API implemented within this project is a Rest-API for which the [Django Rest Framework](https://www.django-rest-framework.org/) was used. This is how it generally works:
 
-The client sends a question to the server. The server returns an answer with an id. The client sends a new question but also includes the id of the last answer. This could look like this:
+The client sends a message to the server. The server returns a statement with its `id`. The client sends a new message but also includes the `id` of the last statement. This could look like this:
 
 ### 1) Simple Conversation
-The client sends a messeages to the chatbot via POST to ```/api/v1/chatbot/``` with the following fields:
 
-* message: your user input, eg. 'my question'
-* in_response_to: the id of the chatbot's previous reponse (here null, as this is the first message) 
+The client sends a request to the chatbot via `POST` to `/api/v1/chatbot/` with the following fields:
+
+* `message`: your user input, e.g. `"my question"`
+* `in_response_to`: the `id` of the chatbot's previous reponse (here `null`, as this is the first message) 
 
 ```
 {
@@ -20,11 +21,11 @@ The client sends a messeages to the chatbot via POST to ```/api/v1/chatbot/``` w
 
 which will result in the following reponse:
 
-* id: the id of the chatbot's reponse message
-* message: the message you sent in your POST request
-* reply: the chatbot's reply
-* conclusion: if there is an conclusion, it means that the chatbot conversation has finished and within the next POST the ```in_response_to``` should be set to ```null``` in order to start an new conservation (see example below).
-* forward: if forward is set, this means that the chatbot has been configured in a way, to jump to a different conversation. So instead if setting the ```in_response_to``` to the ```id``` , you should set it to the ```id``` from within the ```forward``` reply (see example below)
+* `id`: the id of the chatbot's reponse message
+* `message`: the message the backend matched to the message in your request
+* `reply`: the chatbot's reply which should be shown to the user
+* `conclusion`: if there is an conclusion, it means that the chatbot conversation has finished and additionally `conclusion` should be shown to the user. Also, for the next `POST` the `in_response_to` should be set to `null` in order to start an new conversation (see example below).
+* `forward`: if forward is set, this means that the chatbot has been configured in a way, to jump to a different conversation. So in addition to `reply` (and `conclusion`), `forward.reply` should be shown to the user and for the next `POST` `in_response_to` should be set to `forward.id` (see example below)
 
 ```
 {
@@ -36,7 +37,7 @@ which will result in the following reponse:
 }
 ```
 
-your next POST to the API would look like this:
+your next `POST` to the API would look like this:
 
 ```
 {
@@ -45,10 +46,9 @@ your next POST to the API would look like this:
 }
 ```
 
-
-
 ### 2) Conversation with Conclusion
-if the API replies with an reponse where the ```conclusion``` is set you have start a new conservation. 
+
+if the API replies with an reponse where the `conclusion` is set you have start a new conversation. 
 
 e.g. the API's response looks like that:
 ```
@@ -61,7 +61,7 @@ e.g. the API's response looks like that:
 }
 ```
 
-your next POST should have ```in_response_to``` set to ```null``` the look like that:
+your next POST should have `in_response_to` set to `null` the look like that:
 ```
 {
     message: "my next question", 
@@ -70,9 +70,11 @@ your next POST should have ```in_response_to``` set to ```null``` the look like 
 ```
 
 ### 2) Conversation, that needs to be forwared
-if the API replies with an reponse where the ```forward``` is set you have to change the id of your ```in_response_to```.
+
+if the API replies with an reponse where the `forward` is set you have to change the id of your `in_response_to`.
 
 e.g. the API's response looks like that:
+
 ```
 {
     "id":96,
@@ -88,7 +90,7 @@ e.g. the API's response looks like that:
 }
 ```
 
-instead of setting ```in_response_to``` to ```96``` you should set to the ```id``` in ```forward```, like that:
+instead of setting `in_response_to` to `96` you should set to the `id` in `forward`, like that:
 
 ```
 {
@@ -96,5 +98,3 @@ instead of setting ```in_response_to``` to ```96``` you should set to the ```id`
     in_response_to: 89
 }
 ```
-
-
