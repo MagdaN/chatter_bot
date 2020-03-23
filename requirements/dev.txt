@@ -3,6 +3,6 @@
 # development only dependencies in aphabetical order
 django-debug-toolbar==2.2
 pytest==5.4.1
-pytest-django~=3.7
+pytest-django==3.8.0
 pytest-dotenv~=0.4
 pytest-cov~=2.8
