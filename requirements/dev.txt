@@ -1,7 +1,7 @@
 -r common.txt
 
 # development only dependencies in aphabetical order
-django-debug-toolbar~=2.1
+django-debug-toolbar==3.1.1
 pytest~=5.3
 pytest-django~=3.7
 pytest-dotenv~=0.4
