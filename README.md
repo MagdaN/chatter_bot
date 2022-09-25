@@ -14,4 +14,4 @@ The detailed setup instructions are covered on seperate pages:
 
 * [Development setup](/docs/dev.md)
 * [Production setup](/docs/prod.md)
-salut les gens
+
